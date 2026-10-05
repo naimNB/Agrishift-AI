@@ -2,36 +2,36 @@ import { TrendingUp, Droplets, Sprout, DollarSign, ArrowRight, Calculator, FileT
 
 const stats = [
   {
-    value: "−34%",
-    label: "Water Saved",
-    sub: "Across 1,400 ha of almond orchards during severe drought",
+    value: "−28%",
+    label: "Pumping & Water Savings",
+    sub: "Simulated AWD (Alternate Wetting & Drying) water savings in Barind Boro rice tracts",
     icon: Droplets,
     color: "text-blue-400",
     bg: "from-blue-500/15 to-transparent",
     border: "border-blue-500/20 hover:border-blue-400/40",
   },
   {
-    value: "+19.2%",
-    label: "Avg Yield Increase",
-    sub: "Documented across 3,200 ha in the Midwestern Grain Belt",
+    value: "+18.5%",
+    label: "Projected Yield Resiliency",
+    sub: "Targeted crop rotation shift from delayed wheat to maize in Bogura & Dinajpur",
     icon: Sprout,
     color: "text-green-400",
     bg: "from-green-500/15 to-transparent",
     border: "border-green-500/20 hover:border-green-400/40",
   },
   {
-    value: "−26%",
-    label: "Fertilizer Waste",
-    sub: "Precision nitrogen mapping preventing excess groundwater run-off",
+    value: "−22%",
+    label: "Input Optimization",
+    sub: "Telemetry-guided fertilizer timing to avoid heavy monsoon rainfall runoff",
     icon: TrendingUp,
     color: "text-amber-400",
     bg: "from-amber-500/15 to-transparent",
     border: "border-amber-500/20 hover:border-amber-400/40",
   },
   {
-    value: "$138",
-    label: "Net Gain / Acre",
-    sub: "Combined savings from input reduction and enhanced harvest",
+    value: "৳ 8,400",
+    label: "Est. Net Gain / Bigha",
+    sub: "Projected net return from reduced diesel pumping and optimal sowing calendars",
     icon: DollarSign,
     color: "text-emerald-400",
     bg: "from-emerald-500/15 to-transparent",
@@ -55,17 +55,17 @@ export default function Impact({ onOpenModal }) {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/25 text-blue-400 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-            Verified Field Impact
+            Projected Regional Impact
           </div>
           <h2
             className="text-4xl sm:text-5xl font-bold leading-tight"
             style={{ fontFamily: "Space Grotesk, Inter, sans-serif" }}
           >
-            Proven Economic &{" "}
+            Estimated Economic &{" "}
             <span className="gradient-text">Ecological Returns</span>
           </h2>
           <p className="mt-4 text-gray-400 text-base sm:text-lg leading-relaxed">
-            Real results from commercial growers who transformed their seasonal planning using NASA Earth data analytics.
+            Illustrative projections and benchmarked models for northern Bangladesh agricultural zones based on NASA agroclimate telemetry.
           </p>
         </div>
 
@@ -83,8 +83,8 @@ export default function Impact({ onOpenModal }) {
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-4">
                     <Icon className={`w-5 h-5 ${stat.color}`} />
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500 bg-white/5 px-2 py-0.5 rounded-full border border-white/8">
-                      Verified
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/5 px-2 py-0.5 rounded-full border border-white/8">
+                      Projected
                     </span>
                   </div>
 

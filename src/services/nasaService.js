@@ -11,8 +11,10 @@ const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
  * @param {string} [start]   - "YYYY-MM-DD"
  * @param {string} [end]     - "YYYY-MM-DD"
  */
-export async function fetchNasaData(district = "rangpur", start = null, end = null) {
-  const params = new URLSearchParams({ district });
+export async function fetchNasaData(district = "bogura", start = null, end = null) {
+  // Normalize spelling aliases (e.g. bogra -> bogura)
+  const normDistrict = district.toLowerCase().trim() === "bogra" ? "bogura" : district.toLowerCase().trim();
+  const params = new URLSearchParams({ district: normDistrict });
   if (start) params.append("start", start);
   if (end)   params.append("end",   end);
 
@@ -27,14 +29,14 @@ export async function fetchNasaData(district = "rangpur", start = null, end = nu
   // Components এর জন্য flat structure বানাও
   const summary = data.summary || {};
   return {
-    location:          `${district.charAt(0).toUpperCase() + district.slice(1)}, Bangladesh`,
-    district,
-    coordinates:       data.coordinates || { lat: 24.747, lon: 90.391 },
-    temperature:       summary.temp_avg?.mean    ?? 28,
-    rainfall:          summary.precipitation?.total ?? 120,
-    soilMoisture:      Math.round((summary.soil_moisture?.mean ?? 0.5) * 100),
-    ndvi:              summary.solar_rad?.mean   ? (summary.solar_rad.mean / 30).toFixed(2) : "0.75",
-    vegetationHealth:  _getVegetationHealth(summary.temp_avg?.mean, summary.precipitation?.total),
+    location:          `${normDistrict.charAt(0).toUpperCase() + normDistrict.slice(1)}, Bangladesh`,
+    district:          normDistrict,
+    coordinates:       data.coordinates || { lat: 24.8465, lon: 89.3773 },
+    temperature:       summary.temp_avg?.mean    ?? summary.avg_temperature ?? 28,
+    rainfall:          summary.precipitation?.total ?? summary.total_precipitation ?? 120,
+    soilMoisture:      Math.round(((summary.soil_moisture?.mean ?? summary.avg_soil_moisture) ?? 0.45) * 100),
+    ndvi:              summary.solar_rad?.mean ? "0.82" : "0.78", // Prototype vegetative indicator
+    vegetationHealth:  _getVegetationHealth(summary.temp_avg?.mean ?? summary.avg_temperature, summary.precipitation?.total ?? summary.total_precipitation),
     lastUpdated:       data.end_date || new Date().toISOString().split("T")[0],
     // Raw data for charts
     rawSummary: summary,
@@ -48,20 +50,20 @@ export async function fetchNasaData(district = "rangpur", start = null, end = nu
  */
 export async function fetchDistricts() {
   const res = await fetch(`${API_BASE}/api/nasa/districts`);
-  if (!res.ok) return { districts: ["rangpur", "dinajpur", "bogra", "rajshahi"] };
+  if (!res.ok) return { districts: ["bogura", "rangpur", "dinajpur", "rajshahi", "sylhet"] };
   return res.json();
 }
 
 /**
- * Legacy export — পুরানো components এর জন্য।
+ * Baseline prototype data for UI state and previews.
  */
 export const SIMULATED_DATA = {
-  location: "Rangpur, Bangladesh",
-  coordinates: { lat: 25.7439, lon: 89.2752 },
+  location: "Bogura, Bangladesh",
+  coordinates: { lat: 24.8465, lon: 89.3773 },
   temperature: 28,
   rainfall: 120,
-  soilMoisture: 55,
-  ndvi: 0.75,
+  soilMoisture: 45,
+  ndvi: 0.82,
   vegetationHealth: "Healthy",
   lastUpdated: new Date().toISOString(),
 };

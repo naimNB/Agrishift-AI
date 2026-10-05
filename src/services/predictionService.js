@@ -37,21 +37,28 @@ export async function predictCropSuitability(params) {
  * CropRecommendation.jsx এ soilType + season দিয়ে call করা হয়।
  * Climate data NASA থেকে আসে, এখন dummy values দিয়ে bridge করা হচ্ছে।
  */
-export async function predictCrops({ soilType = "loam", season = "rabi", district = "rangpur" } = {}) {
+export async function predictCrops({ soilType = "loam", season = "rabi", district = "bogura" } = {}) {
+  const normDistrict = district.toLowerCase().trim() === "bogra" ? "bogura" : district.toLowerCase().trim();
+
+  // Bangladesh seasonal crop mapping
   const CROP_BY_SEASON = {
-    spring: ["maize", "rice"],
-    summer: ["rice", "jute"],
-    rabi:   ["wheat", "maize"],
+    spring:    ["maize", "rice", "jute"],
+    summer:    ["rice", "jute"],
+    rabi:      ["wheat", "maize", "potato", "mustard"],
+    "kharif-1":["rice", "jute", "maize"],
+    "kharif-2":["rice"],
   };
 
-  const seasonKey = season.toLowerCase();
+  const seasonKey = season.toLowerCase().replace(/\s+/g, "");
   const crops = CROP_BY_SEASON[seasonKey] || CROP_BY_SEASON.rabi;
 
-  // Climate defaults per season (rough North Bengal averages)
+  // Climate defaults per season (North Bengal averages)
   const SEASON_CLIMATE = {
-    spring: { temp_avg: 28, precipitation: 8,  humidity: 72, soil_moisture: 0.55, solar_rad: 20 },
-    summer: { temp_avg: 31, precipitation: 14, humidity: 82, soil_moisture: 0.72, solar_rad: 22 },
-    rabi:   { temp_avg: 17, precipitation: 3,  humidity: 48, soil_moisture: 0.38, solar_rad: 14 },
+    spring:    { temp_avg: 28, precipitation: 8,  humidity: 72, soil_moisture: 0.55, solar_rad: 20 },
+    summer:    { temp_avg: 31, precipitation: 14, humidity: 82, soil_moisture: 0.72, solar_rad: 22 },
+    rabi:      { temp_avg: 18, precipitation: 2,  humidity: 52, soil_moisture: 0.40, solar_rad: 15 },
+    "kharif-1":{ temp_avg: 30, precipitation: 10, humidity: 76, soil_moisture: 0.60, solar_rad: 21 },
+    "kharif-2":{ temp_avg: 29, precipitation: 16, humidity: 84, soil_moisture: 0.75, solar_rad: 18 },
   };
   const climate = SEASON_CLIMATE[seasonKey] || SEASON_CLIMATE.rabi;
 

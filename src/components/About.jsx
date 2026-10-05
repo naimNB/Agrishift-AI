@@ -22,31 +22,31 @@ const pillars = [
     color: "text-amber-400",
     bg: "bg-amber-500/10",
     border: "hover:border-amber-400/30",
-    title: "Certified Agronomy Team",
-    desc: "Our AI models are supervised by certified crop advisors (CCA) and agricultural university researchers ensuring scientific rigor.",
+    title: "Regional Agronomic Standards",
+    desc: "Calibrated alongside published guidelines from national agricultural research institutions (BRRI / BARI) for Bangladesh AEZs.",
   },
   {
     icon: Users,
     color: "text-purple-400",
     bg: "bg-purple-500/10",
     border: "hover:border-purple-400/30",
-    title: "Global Grower Network",
-    desc: "Deployed across 14 countries spanning drought-prone arid zones, temperate grain belts, and tropical plantation regions.",
+    title: "Regional Cropping Focus",
+    desc: "Engineered specifically for northern Bangladesh cropping cycles, focusing on Bogura, Rangpur, Dinajpur, and Rajshahi.",
   },
 ];
 
 const testimonials = [
   {
-    quote: "AgriShift AI's NDVI alerts saved our almond crop two seasons in a row. The water savings alone paid for the platform in 6 weeks.",
-    name: "Maria Gonzalez",
-    role: "Orchard Manager, Kern County CA",
-    avatar: "MG",
+    quote: "Monitoring root-zone moisture through NASA POWER indices helped schedule supplemental irrigation for Boro rice in Bogura, reducing groundwater pumping costs significantly.",
+    name: "Tariqul Islam",
+    role: "Agronomy Extension Worker, Bogura Region",
+    avatar: "TI",
   },
   {
-    quote: "We trialed it across 800 acres of wheat. Yield was up 22% and our nitrogen bill dropped significantly. The ROI is undeniable.",
-    name: "James Okoro",
-    role: "Head Agronomist, Delta Cooperative",
-    avatar: "JO",
+    quote: "During the Rabi transition in Rangpur, the crop suitability recommendations supported shifting land from delayed wheat to hybrid maize, avoiding late-season heat stress.",
+    name: "Abdul Hannan",
+    role: "Grower & Cooperative Organizer, Rangpur",
+    avatar: "AH",
   },
 ];
 

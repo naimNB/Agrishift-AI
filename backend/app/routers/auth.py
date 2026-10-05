@@ -8,6 +8,7 @@ from app.services.auth_service import (
     hash_password,
     verify_password,
     create_access_token,
+    get_current_user,
 )
 
 router = APIRouter()
@@ -42,3 +43,9 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
         )
     token = create_access_token({"sub": user.email})
     return {"access_token": token}
+
+
+@router.get("/me", response_model=UserOut)
+def get_me(current_user: User = Depends(get_current_user)):
+    """বর্তমান logged-in user এর profile ফেরত দেয়।"""
+    return current_user

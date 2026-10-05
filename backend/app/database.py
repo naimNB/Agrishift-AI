@@ -25,5 +25,5 @@ def get_db():
 
 def create_tables():
     """App start হলে সব table auto-create হবে।"""
-    from app.models import user  # noqa: F401 — import করলেই table register হয়
+    from app.models import user, farm  # noqa: F401 — import করলেই table register হয়
     Base.metadata.create_all(bind=engine)

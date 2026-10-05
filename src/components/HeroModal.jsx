@@ -20,8 +20,8 @@ import {
 export default function HeroModal({ type, onClose }) {
   const [activeLayer, setActiveLayer] = useState("ndvi");
   const [selectedSoil, setSelectedSoil] = useState("loam");
-  const [selectedSeason, setSelectedSeason] = useState("spring");
-  const [acres, setAcres] = useState(250);
+  const [selectedSeason, setSelectedSeason] = useState("rabi");
+  const [acres, setAcres] = useState(15);
   const [submittedContact, setSubmittedContact] = useState(false);
 
   if (!type) return null;
@@ -111,7 +111,7 @@ export default function HeroModal({ type, onClose }) {
               border
               border-cyan-500/40
               ">
-                NASA Live Telemetry
+                NASA Telemetry (Simulated Layer)
               </span>
             </div>
 
@@ -121,14 +121,14 @@ export default function HeroModal({ type, onClose }) {
             font-bold
             mt-1
             ">
-              Live Satellite Vegetation Map
+              Satellite Vegetation & Moisture Map
             </h3>
             <p className="
             text-sm
             text-gray-300
             mt-2
             ">
-              Real-time multispectral telemetry from NASA Landsat-9 and Sentinel-2 constellations calibrated for agriculture.
+              Prototype multispectral telemetry and NASA POWER agroclimatology calibrated for northern Bangladesh agricultural zones (Bogura & Rangpur).
             </p>
 
             {/* Layer Selector Buttons */}
@@ -243,7 +243,7 @@ export default function HeroModal({ type, onClose }) {
                 bg-emerald-400
                 animate-ping
                 "></span>
-                LAT 36.7783° N | LON 119.4179° W
+                LAT 24.8465° N | LON 89.3773° E (Bogura, BD)
               </div>
 
               <div className="
@@ -457,7 +457,7 @@ export default function HeroModal({ type, onClose }) {
                   Target Season
                 </label>
                 <div className="grid grid-cols-3 gap-2 mt-2">
-                  {["spring", "summer", "autumn"].map((season) => (
+                  {["rabi", "kharif-1", "kharif-2"].map((season) => (
                     <button
                       key={season}
                       type="button"
@@ -505,7 +505,7 @@ export default function HeroModal({ type, onClose }) {
                   text-emerald-400
                   uppercase
                   ">
-                    Top AI Recommendation
+                    Model Recommendation (Demo)
                   </span>
                   <h4 className="
                   text-xl
@@ -514,10 +514,10 @@ export default function HeroModal({ type, onClose }) {
                   mt-0.5
                   ">
                     {selectedSoil === "sandy"
-                      ? "Drought-Resilient Sorghum (Grain & Silage)"
+                      ? "Char Land Rotation: Groundnut, Maize & Mustard"
                       : selectedSoil === "clay"
-                      ? "Winter Wheat & High-Yield Barley"
-                      : "Regenerative Soybeans & Nitrogen Clover"}
+                      ? "High-Yield Boro / T. Aman Rice & Winter Wheat"
+                      : "Diversified Rotation: Maize, Potato & Mustard"}
                   </h4>
                 </div>
                 <div className="
@@ -531,7 +531,7 @@ export default function HeroModal({ type, onClose }) {
                 text-xs
                 font-bold
                 ">
-                  96.4% Match
+                  94.2% Match
                 </div>
               </div>
 
@@ -546,16 +546,16 @@ export default function HeroModal({ type, onClose }) {
               text-center
               ">
                 <div>
-                  <div className="text-xs text-gray-400">Yield Boost</div>
-                  <div className="text-lg font-bold text-green-300 mt-0.5">+24.5%</div>
+                  <div className="text-xs text-gray-400">Suitability Index</div>
+                  <div className="text-lg font-bold text-green-300 mt-0.5">High</div>
                 </div>
                 <div>
                   <div className="text-xs text-gray-400">Water Conservation</div>
-                  <div className="text-lg font-bold text-blue-300 mt-0.5">-31% Saved</div>
+                  <div className="text-lg font-bold text-blue-300 mt-0.5">AWD Mode</div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-400">Carbon Credit Score</div>
-                  <div className="text-lg font-bold text-emerald-300 mt-0.5">Tier 1 Elite</div>
+                  <div className="text-xs text-gray-400">Sowing Window</div>
+                  <div className="text-lg font-bold text-emerald-300 mt-0.5">On-Time (Rabi)</div>
                 </div>
               </div>
             </div>
@@ -675,7 +675,7 @@ export default function HeroModal({ type, onClose }) {
               text-xs
               text-gray-400
               ">
-                <span>HD 1080p • NASA Earth Science Partner</span>
+                <span>HD 1080p • NASA POWER Agroclimatology Overview</span>
                 <span>03:14</span>
               </div>
             </div>
@@ -727,7 +727,7 @@ export default function HeroModal({ type, onClose }) {
               border
               border-blue-500/40
               ">
-                Field Validations
+                Simulated Scenarios
               </span>
             </div>
 
@@ -737,14 +737,14 @@ export default function HeroModal({ type, onClose }) {
             font-bold
             mt-1
             ">
-              Independent Case Studies
+              Regional Crop & Climate Case Scenarios
             </h3>
             <p className="
             text-sm
             text-gray-300
             mt-2
             ">
-              Documented production deployments demonstrating measurable yield increases and climate mitigation.
+              Simulated scenarios and research benchmarks modeling climate adaptation across northern Bangladesh agricultural zones.
             </p>
 
             <div className="
@@ -762,15 +762,15 @@ export default function HeroModal({ type, onClose }) {
               ">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="font-bold text-white">Central Valley Almond & Citrus Growers</h4>
-                    <p className="text-xs text-gray-400 mt-1">California, USA • 1,400 Hectares</p>
+                    <h4 className="font-bold text-white">High Barind Tract Groundwater Conservation Model</h4>
+                    <p className="text-xs text-gray-400 mt-1">Rajshahi & Bogura, Bangladesh • Barind Agricultural Belt</p>
                   </div>
                   <span className="text-xs font-bold text-green-400 bg-green-400/10 px-2.5 py-1 rounded-full">
-                    -34% Water Use
+                    -32% Fuel / Pumping
                   </span>
                 </div>
                 <p className="text-xs text-gray-300 mt-2">
-                  Replaced calendar irrigation with NASA MODIS evapotranspiration mapping, saving 420M gallons during severe drought.
+                  Simulated shift from continuous flooding to NASA POWER soil moisture-guided Alternate Wetting & Drying (AWD) for Boro rice cultivation.
                 </p>
               </div>
 
@@ -785,15 +785,15 @@ export default function HeroModal({ type, onClose }) {
               ">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="font-bold text-white">Midwestern Grain & Soybean Collective</h4>
-                    <p className="text-xs text-gray-400 mt-1">Iowa, USA • 3,200 Hectares</p>
+                    <h4 className="font-bold text-white">Tista Basin Crop Diversification & Sowing Window Calibration</h4>
+                    <p className="text-xs text-gray-400 mt-1">Rangpur & Dinajpur, Bangladesh • Northern Plains</p>
                   </div>
                   <span className="text-xs font-bold text-green-400 bg-green-400/10 px-2.5 py-1 rounded-full">
-                    +19.2% Yield
+                    +18% Net Return
                   </span>
                 </div>
                 <p className="text-xs text-gray-300 mt-2">
-                  AI crop rotation matched nitrogen demands to soil moisture forecasts, yielding $184/acre in extra profit.
+                  Early temperature and rainfall telemetry enabled timely transition between T. Aman harvest and Rabi maize/mustard, avoiding late-season heat shocks.
                 </p>
               </div>
             </div>
@@ -879,7 +879,7 @@ export default function HeroModal({ type, onClose }) {
                 <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto mb-2" />
                 <h4 className="text-lg font-bold text-white">Consultation Request Received!</h4>
                 <p className="text-xs text-gray-300 mt-1">
-                  Our regional agronomist will contact you within 2 hours with your satellite baseline report.
+                  Thank you! An agricultural specialist will review your request and share a localized satellite agroclimate summary.
                 </p>
               </div>
             ) : (
@@ -1036,22 +1036,22 @@ export default function HeroModal({ type, onClose }) {
             border-white/10
             ">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-xs uppercase font-bold text-gray-400">Total Cultivated Area</span>
-                <span className="text-lg font-bold text-green-400">{acres} Acres</span>
+                <span className="text-xs uppercase font-bold text-gray-400">Total Land Area</span>
+                <span className="text-lg font-bold text-green-400">{acres} Acres ({acres * 3} Bighas)</span>
               </div>
               <input
                 type="range"
-                min="50"
-                max="2500"
-                step="50"
+                min="3"
+                max="100"
+                step="2"
                 value={acres}
                 onChange={(e) => setAcres(Number(e.target.value))}
                 className="w-full accent-green-400 cursor-pointer"
               />
               <div className="flex justify-between text-[11px] text-gray-500 mt-1">
-                <span>50 Acres</span>
-                <span>1,250 Acres</span>
-                <span>2,500+ Acres</span>
+                <span>3 Acres (9 Bighas)</span>
+                <span>50 Acres (150 Bighas)</span>
+                <span>100+ Acres (300+ Bighas)</span>
               </div>
 
               <div className="
@@ -1065,21 +1065,21 @@ export default function HeroModal({ type, onClose }) {
               text-center
               ">
                 <div>
-                  <div className="text-xs text-gray-400">Est. Annual Gain</div>
+                  <div className="text-xs text-gray-400">Est. Input / Pumping Savings</div>
                   <div className="text-lg sm:text-xl font-bold text-green-400 mt-1">
-                    ${(acres * 138).toLocaleString()}
+                    ৳ {(acres * 14500).toLocaleString()}
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-400">Water Conserved</div>
+                  <div className="text-xs text-gray-400">Irrigation Saved</div>
                   <div className="text-lg sm:text-xl font-bold text-blue-400 mt-1">
-                    {(acres * 45).toLocaleString()} kGal
+                    {(acres * 38).toLocaleString()} hrs
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-400">Nitrogen Optimization</div>
+                  <div className="text-xs text-gray-400">Fertilizer Efficiency</div>
                   <div className="text-lg sm:text-xl font-bold text-amber-300 mt-1">
-                    -26%
+                    -22%
                   </div>
                 </div>
               </div>

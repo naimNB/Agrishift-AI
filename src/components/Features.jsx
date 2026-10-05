@@ -33,8 +33,8 @@ const cards = [
     glow: "group-hover:shadow-blue-500/20",
     title: "Moisture & Water Insights",
     description:
-      "Satellite radar measures topsoil and root-zone moisture, optimizing irrigation and saving up to 34% water use.",
-    badge: "−34% Water",
+      "NASA agroclimate telemetry measures topsoil and root-zone moisture to optimize irrigation scheduling and groundwater conservation.",
+    badge: "Root-Zone Index",
     badgeColor: "text-blue-300 bg-blue-500/10 border-blue-500/20",
   },
   {
@@ -43,10 +43,10 @@ const cards = [
     bg: "from-amber-500/15 to-amber-500/5",
     border: "hover:border-amber-400/40",
     glow: "group-hover:shadow-amber-500/20",
-    title: "Yield Forecasting",
+    title: "Suitability & Risk Modeling",
     description:
-      "Predictive models combine spectral data with seasonal weather outlooks to forecast harvest volumes weeks ahead.",
-    badge: "+19% Yield",
+      "Predictive models combine temperature, precipitation, and moisture trends with regional crop thresholds to evaluate seasonal viability.",
+    badge: "Suitability Model",
     badgeColor: "text-amber-300 bg-amber-500/10 border-amber-500/20",
   },
   {
@@ -55,10 +55,10 @@ const cards = [
     bg: "from-emerald-500/15 to-emerald-500/5",
     border: "hover:border-emerald-400/40",
     glow: "group-hover:shadow-emerald-500/20",
-    title: "Soil Health Analytics",
+    title: "Agro-Ecological Analytics",
     description:
-      "Continuous monitoring of nitrogen levels, carbon sequestration, and microbial health across your field grid.",
-    badge: "Precision Zones",
+      "Monitoring canopy vegetative vitality, thermal stress, and soil texture constraints across regional agricultural zones.",
+    badge: "Regional Zones",
     badgeColor: "text-emerald-300 bg-emerald-500/10 border-emerald-500/20",
   },
   {

@@ -1,16 +1,24 @@
 import { useState, useEffect } from "react";
-import { Menu, X, Satellite, Clapperboard, ImageIcon } from "lucide-react";
+import { Menu, X, Satellite, Clapperboard, ImageIcon, LogIn, LogOut, User } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 const navLinks = [
   { label: "Home", href: "#home" },
+  { label: "Dashboard", href: "#dashboard" },
+  { label: "Farm Map", href: "#farm-map" },
+  { label: "My Farm", href: "#my-farm" },
+  { label: "Crop Ranking", href: "#crop-ranking" },
+  { label: "Climate Risk", href: "#climate-risk" },
+  { label: "Advisory", href: "#farmer-advisory" },
   { label: "Features", href: "#features" },
-  { label: "NASA Data", href: "#nasa-data" },
+  { label: "Earth Sensors", href: "#nasa-data" },
   { label: "How It Works", href: "#how-it-works" },
   { label: "Impact", href: "#impact" },
   { label: "About", href: "#about" },
 ];
 
 export default function Navbar({ onOpenModal, bgMode = "normal", onToggleBgMode }) {
+  const { user, logout, openAuthModal, isAuthenticated } = useAuth();
   const isVideo = bgMode === "video";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -58,7 +66,7 @@ export default function Navbar({ onOpenModal, bgMode = "normal", onToggleBgMode 
           ))}
         </div>
 
-        {/* Desktop CTA */}
+        {/* Desktop CTA & Auth */}
         <div className="hidden lg:flex items-center gap-3">
           {/* ── Video / Normal mode toggle ── */}
           <button
@@ -66,7 +74,7 @@ export default function Navbar({ onOpenModal, bgMode = "normal", onToggleBgMode 
             id="bg-mode-toggle"
             onClick={onToggleBgMode}
             title={isVideo ? "Switch to Normal Mode" : "Switch to Video Mode"}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border transition-all duration-300 cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold border transition-all duration-300 cursor-pointer ${
               isVideo
                 ? "bg-emerald-500/15 border-emerald-400/40 text-emerald-300 hover:bg-emerald-500/25"
                 : "bg-white/6 border-white/15 text-gray-400 hover:text-white hover:bg-white/10 hover:border-white/25"
@@ -74,13 +82,13 @@ export default function Navbar({ onOpenModal, bgMode = "normal", onToggleBgMode 
           >
             {/* Toggle track */}
             <span
-              className="relative inline-flex w-8 h-4 rounded-full transition-colors duration-300 shrink-0"
+              className="relative inline-flex w-7 h-3.5 rounded-full transition-colors duration-300 shrink-0"
               style={{ background: isVideo ? "rgba(52,211,153,0.4)" : "rgba(255,255,255,0.12)" }}
             >
               <span
-                className="absolute top-0.5 w-3 h-3 rounded-full transition-all duration-300 shadow"
+                className="absolute top-0.5 w-2.5 h-2.5 rounded-full transition-all duration-300 shadow"
                 style={{
-                  left: isVideo ? "calc(100% - 0.875rem)" : "0.125rem",
+                  left: isVideo ? "calc(100% - 0.75rem)" : "0.125rem",
                   background: isVideo ? "#34d399" : "#6b7280",
                 }}
               />
@@ -92,13 +100,39 @@ export default function Navbar({ onOpenModal, bgMode = "normal", onToggleBgMode 
             )}
           </button>
 
-          <button
-            type="button"
-            onClick={() => onOpenModal && onOpenModal("satellite")}
-            className="px-5 py-2.5 rounded-xl text-sm font-semibold text-green-300 border border-green-500/30 bg-green-500/10 hover:bg-green-500/20 hover:border-green-400/50 transition-all duration-200 cursor-pointer"
-          >
-            Live Telemetry
-          </button>
+          {/* Auth State Button */}
+          {isAuthenticated && user ? (
+            <div className="flex items-center gap-2 pl-2 border-l border-white/10">
+              <a
+                href="#my-farm"
+                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/6 hover:bg-white/12 border border-white/10 transition"
+                title="View My Farm"
+              >
+                <div className="w-6 h-6 rounded-full bg-emerald-500/20 border border-emerald-400/50 flex items-center justify-center text-emerald-300 font-bold text-xs">
+                  {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                </div>
+                <span className="text-xs font-semibold text-gray-200">{user.name.split(" ")[0]}</span>
+              </a>
+              <button
+                type="button"
+                onClick={logout}
+                className="p-2 rounded-xl text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition cursor-pointer"
+                title="Sign Out"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => openAuthModal("login")}
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold bg-white/8 hover:bg-white/14 border border-white/15 text-gray-200 hover:text-white transition cursor-pointer"
+            >
+              <LogIn className="w-3.5 h-3.5 text-emerald-400" />
+              Sign In
+            </button>
+          )}
+
           <a
             href="#features"
             className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-black font-bold text-sm shadow-lg shadow-green-500/25 hover:shadow-green-400/40 transition-all duration-200 focus-visible:outline-2 focus-visible:outline-green-400"
@@ -121,7 +155,7 @@ export default function Navbar({ onOpenModal, bgMode = "normal", onToggleBgMode 
       {/* Mobile Drawer */}
       <div
         className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-          mobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+          mobileMenuOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
         <div className="px-6 pb-6 pt-2 border-t border-white/8 bg-[#060b17]/98 backdrop-blur-xl flex flex-col gap-1">
@@ -135,12 +169,48 @@ export default function Navbar({ onOpenModal, bgMode = "normal", onToggleBgMode 
               {link.label}
             </a>
           ))}
-          <div className="section-divider my-3" />
+
+          <div className="section-divider my-2" />
+
+          {/* Mobile Auth Button */}
+          {isAuthenticated && user ? (
+            <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 text-xs">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center">
+                  {user.name.charAt(0).toUpperCase()}
+                </div>
+                <span className="font-semibold text-white">{user.name}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  logout();
+                  setMobileMenuOpen(false);
+                }}
+                className="text-red-400 hover:underline text-xs"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                openAuthModal("login");
+                setMobileMenuOpen(false);
+              }}
+              className="w-full py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-sm text-center transition flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <LogIn className="w-4 h-4" />
+              Sign In / Register
+            </button>
+          )}
+
           {/* Mobile mode toggle */}
           <button
             type="button"
             onClick={() => { onToggleBgMode(); setMobileMenuOpen(false); }}
-            className={`py-3 px-4 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200 ${
+            className={`py-3 px-4 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200 mt-2 ${
               isVideo
                 ? "bg-emerald-500/15 border border-emerald-400/30 text-emerald-300"
                 : "bg-white/6 border border-white/12 text-gray-300"
@@ -152,13 +222,6 @@ export default function Navbar({ onOpenModal, bgMode = "normal", onToggleBgMode 
               <><ImageIcon className="w-4 h-4" /> Normal Mode — Switch to Video BG</>
             )}
           </button>
-          <a
-            href="#features"
-            onClick={() => setMobileMenuOpen(false)}
-            className="py-3 text-center rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-black font-bold text-sm shadow-lg shadow-green-500/25 transition-all duration-200"
-          >
-            Get Started →
-          </a>
         </div>
       </div>
     </nav>

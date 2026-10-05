@@ -5,7 +5,8 @@ const navGroups = [
     label: "Product",
     links: [
       { label: "Features", href: "#features" },
-      { label: "NASA Data", href: "#nasa-data" },
+      { label: "Climate Data", href: "#climate-dashboard" },
+      { label: "Earth Sensors", href: "#nasa-data" },
       { label: "How It Works", href: "#how-it-works" },
     ],
   },
@@ -96,13 +97,13 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="py-6 border-t border-white/8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-gray-500">
-            © {new Date().getFullYear()} AgriShift AI · All rights reserved · Built with NASA Earth Data
+            © {new Date().getFullYear()} AgriShift AI · All rights reserved · Powered by NASA POWER Data
           </p>
 
           <div className="flex items-center gap-4 text-xs text-gray-500">
             <span className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-              NASA Satellite Feed: Live
+              NASA POWER Agroclimate: Active
             </span>
             <a
               href="#home"

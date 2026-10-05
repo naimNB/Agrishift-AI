@@ -1,221 +1,180 @@
-# AgriShift AI — Development & Implementation Procedure
+# AgriShift AI — Technical Implementation & Operational Procedure
 
-This document provides a comprehensive, step-by-step description of the architecture, design decisions, implementation procedure, and operational workflows for the **AgriShift AI** platform.
+This document provides a comprehensive, step-by-step description of the architecture, design decisions, implementation procedures, and operational workflows for the **AgriShift AI** platform.
 
 ---
 
 ## Table of Contents
 
-1. [Project Overview & Purpose](#1-project-overview--purpose)
-2. [Technology Stack & Toolchain](#2-technology-stack--toolchain)
-3. [Component Architecture & Structure](#3-component-architecture--structure)
-4. [Step-by-Step Implementation Procedure](#4-step-by-step-implementation-procedure)
-   - [Step 4.1: Project Setup & Tailwind v4 Initialization](#step-41-project-setup--tailwind-v4-initialization)
-   - [Step 4.2: Typography & Document Head Standardization](#step-42-typography--document-head-standardization)
-   - [Step 4.3: Hero Section & Button System Architecture](#step-43-hero-section--button-system-architecture)
-   - [Step 4.4: Interactive Modal Dialog System](#step-44-interactive-modal-dialog-system)
-   - [Step 4.5: Feature Cards & Interactive Micro-Animations](#step-45-feature-cards--interactive-micro-animations)
-   - [Step 4.6: Layout Optimization & Overflow Prevention](#step-46-layout-optimization--overflow-prevention)
-5. [Operational Procedures (How to Run, Build & Test)](#5-operational-procedures-how-to-run-build--test)
-6. [Git Commit & Version Control Workflow](#6-git-commit--version-control-workflow)
-7. [Repository Code Conventions](#7-repository-code-conventions)
-8. [Future Milestones & Extension Guide](#8-future-milestones--extension-guide)
+1. [System Architecture & Design Decisions](#1-system-architecture--design-decisions)
+2. [Step-by-Step Implementation Procedure](#2-step-by-step-implementation-procedure)
+   - [Phase 1: Foundation & Design System Setup](#phase-1-foundation--design-system-setup)
+   - [Phase 2: NASA Agroclimatology Service Ingestion](#phase-2-nasa-agroclimatology-service-ingestion)
+   - [Phase 3: Multi-Crop Ranking & Recommendation Engine](#phase-3-multi-crop-ranking--recommendation-engine)
+   - [Phase 4: Machine Learning Pipeline & Explainability](#phase-4-machine-learning-pipeline--explainability)
+   - [Phase 5: Climate Risk Intelligence Architecture](#phase-5-climate-risk-intelligence-architecture)
+   - [Phase 6: Actionable Farmer Advisory Engine](#phase-6-actionable-farmer-advisory-engine)
+   - [Phase 7: Interactive Bangladesh Farm Location Map](#phase-7-interactive-bangladesh-farm-location-map)
+   - [Phase 8: My Farm Portfolio Management & Database Schema](#phase-8-my-farm-portfolio-management--database-schema)
+   - [Phase 9: Full Frontend Authentication Context & JWT Handling](#phase-9-full-frontend-authentication-context--jwt-handling)
+   - [Phase 10: Unified Production Dashboard Assembly](#phase-10-unified-production-dashboard-assembly)
+   - [Phase 11: Automated Testing Suite Implementation](#phase-11-automated-testing-suite-implementation)
+3. [Operational Procedures (Run, Build, and Test)](#3-operational-procedures-run-build-and-test)
+4. [Security & Git Hygiene Rules](#4-security--git-hygiene-rules)
+5. [Code Quality & Accessibility Standards](#5-code-quality--accessibility-standards)
+6. [Presentation & Demo Walkthrough](#6-presentation--demo-walkthrough)
 
 ---
 
-## 1. Project Overview & Purpose
+## 1. System Architecture & Design Decisions
 
-**AgriShift AI** is a climate-smart agricultural intelligence platform designed to translate NASA Earth observation data (Landsat-8/9, Sentinel-2, SMAP, ECOSTRESS, MODIS) into actionable, localized recommendations for farmers, agronomists, and agricultural enterprises.
-
-### Core Objectives
-* **Multispectral Telemetry:** Deliver real-time vegetative health indices (NDVI), root-zone soil moisture metrics, and thermal stress alerts.
-* **Predictive AI Crop Matching:** Recommend optimal, climate-resilient crop rotations based on soil texture, seasonal forecasts, and historical precipitation models.
-* **Modern, Premium Visual Design:** Present complex geospatial and satellite telemetry in a sleek, glassmorphic, accessible interface built for desktop, tablet, and mobile devices.
-
----
-
-## 2. Technology Stack & Toolchain
-
-| Layer | Technology | Purpose |
-| :--- | :--- | :--- |
-| **Runtime & Framework** | React 19 (`react`, `react-dom`) | Declarative UI component architecture |
-| **Bundler & Dev Server** | Vite 7 (`vite`, `@vitejs/plugin-react`) | Rapid HMR, asset compilation, and production bundling |
-| **Styling Engine** | Tailwind CSS v4 (`tailwindcss`, `@tailwindcss/vite`) | Utility-first CSS via `@theme` (no `tailwind.config.js`) |
-| **Iconography** | Lucide React (`lucide-react`) | Clean, accessible vector SVG icons |
-| **Typography** | Inter (Google Fonts) | Clean, high-legibility geometric sans-serif font stack |
+### Full-Stack Architecture
+The platform is organized into a decoupled, modern client-server topology:
+* **Frontend:** Single Page Application (SPA) built with React 19, bundled via Vite 7, and styled with Tailwind CSS v4 using modern `@theme` design tokens.
+* **Backend:** Asynchronous Python API built on FastAPI and Uvicorn, using Pydantic v2 schemas for strict data contract validation and SQLAlchemy for ORM persistence.
+* **Geospatial & Ingestion Layer:** Asynchronous HTTPX client querying NASA POWER Daily Point API, parsing agroclimate observations, validating coordinates, and cleaning sensor flags.
+* **Agronomic Decision Layer:** Transparent Bangladesh Agro-Ecological Zone (AEZ) rule engine serving as the primary baseline, complemented by a trained scikit-learn Random Forest classifier with model metadata logging.
 
 ---
 
-## 3. Component Architecture & Structure
+## 2. Step-by-Step Implementation Procedure
 
-```
-d:/Agrishift-AI/
-├── index.html                   # HTML5 root with font preconnections
-├── package.json                 # Project dependencies & scripts
-├── readme.md                    # Core project introduction
-├── PROCEDURE.md                 # Full implementation procedure manual (this document)
-├── vite.config.js               # Vite configuration (React + Tailwind plugins)
-└── src/
-    ├── main.jsx                 # Entry point mounting <App /> in StrictMode
-    ├── App.jsx                  # Top-level shell rendering Navbar + Hero
-    ├── index.css                # Global CSS with Tailwind v4 `@theme`
-    ├── assets/
-    │   └── hero-bg.png          # High-resolution satellite landscape background
-        ├── Navbar.jsx           # Sticky navigation bar with mobile drawer & active blur
-        ├── Hero.jsx             # Hero section with primary CTAs & orbital metrics (#home)
-        ├── Features.jsx         # 6-card core capabilities grid (#features)
-        ├── NasaData.jsx         # NASA satellite constellation telemetry engine (#nasa-data)
-        ├── HowItWorks.jsx       # 3-step automated satellite-to-tractor workflow (#how-it-works)
-        ├── Impact.jsx           # Field-validated ecological & financial results (#impact)
-        ├── About.jsx            # Mission, data standards & final CTA banner (#about)
-        ├── Footer.jsx           # Comprehensive footer with links & status
-        ├── HeroModal.jsx        # Interactive modal manager for telemetry, advisory & ROI
-        ├── FeatureCard.jsx      # Glassmorphic feature card with interactive triggers
-        └── LoginCard.jsx        # Standalone auth component (reserved for dedicated login route/modal)
-```
+### Phase 1: Foundation & Design System Setup
+1. **Toolchain Initialization:** Initialized Vite 7 with `@vitejs/plugin-react` and `@tailwindcss/vite`.
+2. **Design Tokens (`src/index.css`):** Formatted utility tokens, glassmorphism filters, dark-mode color scales (`#060b17` base, `#22c55e` emerald, `#06b6d4` cyan), and typography (`Inter`).
+3. **Accessibility Baseline:** Added semantic landmark tags (`<main>`, `<nav>`, `<footer>`, `<section>`), keyboard listeners (`onKeyDown`), and explicit ARIA attributes on interactive elements.
 
----
+### Phase 2: NASA Agroclimatology Service Ingestion
+1. **API Client (`backend/app/services/nasa_service.py`):** Constructed an asynchronous client querying `https://power.larc.nasa.gov/api/temporal/daily/point` with `community=AG`.
+2. **Parameter Ingestion:** Extracted 8 daily agricultural parameters: `T2M`, `T2M_MAX`, `T2M_MIN`, `PRECTOTCORR`, `RH2M`, `ALLSKY_SFC_SW_DWN`, `WS2M`, and `GWETROOT`.
+3. **Data Hygiene & Missing Value Cleaning:** NASA missing value sentinels (`-999`, `-999.0`) are automatically detected and cleaned to Python `None` / JSON `null` to avoid skewing statistical calculations.
+4. **Summary Aggregations:** Implemented `get_summary_stats()` computing 30-day temperature extrema, cumulative precipitation, and mean soil moisture.
 
-## 4. Step-by-Step Implementation Procedure
+### Phase 3: Multi-Crop Ranking & Recommendation Engine
+1. **Candidate Crop Expansion:** Supported all 6 core Bangladesh crops: Rice (ধান), Wheat (গম), Maize (ভুট্টা), Jute (পাট), Potato (আলু), and Mustard (সরিষা).
+2. **Endpoint (`POST /api/predictions/rank-crops`):** Designed an endpoint taking current climate variables and returning an ordered array of candidate crops sorted strictly by suitability score.
+3. **AEZ Rule Baseline:** Constructed a transparent agronomic scoring engine based on published BRRI/BARI physiological growth boundaries.
+4. **Transparency Guard:** API responses explicitly return `engine: "rule_based"` or `"ml_randomforest"` with `is_ai_model: false/true` so rules are never falsely claimed to be an AI model.
 
-### Step 4.1: Project Setup & Tailwind v4 Initialization
-1. Configured Vite 7 with `@vitejs/plugin-react` and `@tailwindcss/vite` in `vite.config.js`.
-2. Created `src/index.css` using the Tailwind v4 single-entry architecture:
-   ```css
-   @import "tailwindcss";
+### Phase 4: Machine Learning Pipeline & Explainability
+1. **Pipeline Script (`ml/train_model.py`):** Built a reproducible scikit-learn pipeline evaluating Random Forest, Gradient Boosting, and Logistic Regression.
+2. **Validation & Leakage Prevention:** Applied `train_test_split(test_size=0.2, stratify=y, random_state=42)` ensuring zero data leakage between feature preprocessing and model training.
+3. **Model Metadata (`backend/ml_models/model_metadata.json`):** Exported a JSON artifact containing feature lists, training timestamp, accuracy, precision, recall, F1 score, and the confusion matrix.
+4. **Factor Suitability Scoring:** Exposed explainable percentages (0–100%) for Temperature, Rainfall, Humidity, Soil Moisture, and Solar Radiation alongside favorable and caution indicators.
 
-   @theme {
-     --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-       Roboto, sans-serif;
-   }
-   ```
-3. Set base dark background (`#0b1220`), high-contrast text (`#ffffff`), and smooth scrolling behavior.
+### Phase 5: Climate Risk Intelligence Architecture
+1. **Hazard Models (`backend/app/services/climate_risk_service.py`):** Evaluated three core agroclimatic hazards:
+   - **Drought Risk:** Root-zone wetness depletion, cumulative precipitation deficit, consecutive dry days, and vapor pressure deficit.
+   - **Flood Risk:** 24-hour peak rain intensity, 3-day cumulative rainfall, and soil saturation index.
+   - **Heat Stress Risk:** Max temperature observed, Steadman/Rothfusz heat index approximation, and relative humidity.
+2. **Configurable Thresholds (`backend/app/services/climate_risk_config.py`):** Decoupled all agronomic thresholds into a dedicated configuration file for seamless calibration.
+3. **Simulation Overrides:** Supported what-if query parameters (`temp_max`, `precipitation`, `soil_moisture`) allowing farmers to stress-test hypothetical climate conditions.
 
-### Step 4.2: Typography & Document Head Standardization
-1. Added preconnect links in `index.html` to Google Fonts servers (`fonts.googleapis.com` and `fonts.gstatic.com`).
-2. Loaded the `Inter` font family across weights `400`, `500`, `600`, `700`, and `800`.
-3. Standardized HTML5 tags without trailing slashes on void elements for strict HTML5 compliance.
+### Phase 6: Actionable Farmer Advisory Engine
+1. **Advisory Service (`backend/app/services/advisory_service.py`):** Synthesized NASA telemetry, crop ranking results, and climate risk assessments into actionable agronomic guidance.
+2. **Bilingual Synthesis:** Formatted every advisory directive with both English and authentic Bangla (`title_bn`, `message_bn`).
+3. **Category Directives:** Generated advice across 5 categories: Irrigation, Crop Selection, Heat Protection, Flood Preparation, and Sowing Timing.
+4. **Priority Grading:** Tagged advisories with `urgent`, `actionable`, or `routine` priority indicators.
 
-### Step 4.3: Hero Section & Button System Architecture
-The Hero section was restructured to offer clear action pathways without cluttering the screen:
+### Phase 7: Interactive Bangladesh Farm Location Map
+1. **Leaflet + OpenStreetMap (`src/components/FarmMap.jsx`):** Integrated Leaflet and React-Leaflet with custom map markers and district boundaries centered on Bangladesh (`[23.6850, 90.3563]`).
+2. **Click-to-Coordinates:** User map clicks capture exact geographic coordinates (`lat`, `lon`), perform coordinate boundary validation, and query NASA POWER telemetry for that exact location.
+3. **Reverse Distance Resolution:** Calculates the nearest registered monitoring center and distance in kilometers using the Haversine formula.
 
-1. **Top Badge Button:**
-   - Pill-shaped interactive button (`Powered by NASA Earth Data • Specs →`).
-   - Triggers the NASA Satellite Ingestion Specs modal.
-2. **Primary Action Row (3 Balanced CTAs):**
-   - **Explore Demo Farm:** Primary bold green accent button (`bg-green-400 text-black`) with arrow icon.
-   - **Live Map:** Glassmorphism button with a pulsating cyan live radar dot (`animate-ping`) and satellite icon.
-   - **Watch Video:** Subtle border glass button with play icon.
-3. **Quick-Action Toolbar (Compact Pill Row):**
-   - Single-line horizontal group styled as lightweight, translucent tags (`bg-white/10`):
-     - `🌱 Crop Advisory`
-     - `📊 ROI Calc`
-     - `📑 Case Studies`
-     - `📞 Contact Sales`
-     - `🌐 Specs`
+### Phase 8: My Farm Portfolio Management & Database Schema
+1. **SQLAlchemy ORM (`backend/app/models/farm.py`):** Designed the `Farm` entity with fields: `id`, `user_id`, `farm_name`, `district`, `latitude`, `longitude`, `area`, `area_unit`, `soil_type`, `current_crop`, `planting_date`, `created_at`, `updated_at`.
+2. **RESTful CRUD (`backend/app/routers/farms.py`):** Implemented create, list, read, update, and delete endpoints protected with JWT dependency injection (`get_current_user`).
+3. **One-Click Execution:** Enabled users to select any saved farm and instantly run localized climate analysis, crop ranking, and risk intelligence.
 
-### Step 4.4: Interactive Modal Dialog System
-Implemented `src/components/HeroModal.jsx` to give every button real, working functionality:
-* **Satellite Map Modal:** Displays simulated Landsat-9 telemetry (Mean NDVI 0.82, Soil Moisture 34.6%, Canopy Temp 23.8°C), with active layer toggles for NDVI, SMAP soil moisture, and ECOSTRESS thermal stress.
-* **Crop Advisory Modal:** Interactive simulator allowing selection of soil texture (Loam, Clay, Sandy) and season (Spring, Summer, Autumn) to calculate AI crop recommendations with match confidence percentages.
-* **ROI Calculator Modal:** Interactive range slider allowing the farmer to adjust acreage (50 to 2,500+ acres) and see calculated annual financial gains and water savings.
-* **Case Studies Modal:** Summarizes field-validated results from real farm deployments (e.g. -34% water use in California, +19.2% net yield in Iowa).
-* **Contact Sales Modal:** Interactive consultation request form with feedback confirmation.
-* **NASA Specs Modal:** Detailed orbital specs for Landsat-8/9, Sentinel-2, SMAP, and MODIS.
+### Phase 9: Full Frontend Authentication Context & JWT Handling
+1. **Centralized AuthContext (`src/context/AuthContext.jsx`):** Provided reactive state for `user`, `token`, `isAuthenticated`, `login`, `register`, and `logout`.
+2. **Token Security:** Stored tokens in `localStorage` with security tradeoffs documented (convenience vs. XSS, token expiration mitigation).
+3. **401 Interceptor:** API client emits an `agrishift:unauthorized` custom event upon receiving 401 errors, triggering automatic logout and prompt for re-authentication.
 
-### Step 4.5: Feature Cards & Interactive Micro-Animations
-1. Modified `src/components/FeatureCard.jsx` to support optional `onClick` and `actionText` properties.
-2. Added keyboard accessibility (`tabIndex={0}`, `role="button"`, and Enter/Space event handlers).
-3. Added hover micro-animations (`hover:scale-105`, `group-hover:translate-x-1`).
+### Phase 10: Unified Production Dashboard Assembly
+1. **Dashboard Architecture (`src/components/ClimateDashboard.jsx`):** Assembled all modular features into a responsive desktop-grid and mobile-stacked view.
+2. **Component Reuse:** Reused previously built components (`CropRecommendation`, `ClimateRisk`, `FarmerAdvisory`, `FarmMap`, `HistoricalClimateTrends`, `MyFarmManager`) without code duplication.
+3. **Information Hierarchy:** Structured content logically: Location/Farm Selector → Climate Summary → Historical Trends → Crop Ranking → Climate Risk → Advisories → Interactive Map.
 
-### Step 4.6: Layout Optimization & Overflow Prevention
-1. **Vertical Balance:** Tightened element spacing (`mt-5`, `mt-4`, `mt-6`) to prevent the left content column from stretching significantly beyond the right `LoginCard`.
-2. **Responsive Stacking:** On mobile devices, the buttons wrap into natural, touch-friendly tap targets without horizontal overflow.
-3. **Glassmorphism Backdrop:** Backdrop blur (`backdrop-blur-md`) ensures legibility over the high-contrast satellite background image.
+### Phase 11: Automated Testing Suite Implementation
+1. **Frontend Testing (Vitest + RTL):**
+   - Configured `vitest`, `@testing-library/react`, `@testing-library/jest-dom`, and `jsdom`.
+   - Built 14 API service tests (`src/test/api.test.js`) and 9 component tests (`src/test/components.test.jsx`).
+   - Validated loading skeletons, error states, risk cards, candidate crops, factor scores, and district selection.
+2. **Backend Testing (pytest):**
+   - Configured `pytest` and `pytest-asyncio` with in-memory SQLite transactions (`conftest.py`).
+   - Mocked all external NASA POWER requests using `unittest.mock.AsyncMock`.
+   - Built 39 pytest tests across health, auth, NASA parsing, crop ranking, climate risk, and advisory engines.
+   - Result: **62/62 tests passing** across the entire application.
 
 ---
 
-## 5. Operational Procedures (How to Run, Build & Test)
+## 3. Operational Procedures (Run, Build, and Test)
 
-### 5.1 Installing Dependencies
-Ensure Node.js 20.19+ or 22.12+ is installed, then run:
+### 3.1 Development Environment
 ```bash
-npm install
-```
+# Terminal 1: Launch Backend API
+cd backend
+source venv/bin/activate
+uvicorn main:app --reload --port 8000
 
-### 5.2 Starting the Development Server
-```bash
+# Terminal 2: Launch Frontend Development Server
 npm run dev
 ```
-* Vite will launch on `http://localhost:5173/` by default.
-* Fast Refresh (HMR) automatically updates components upon saving file changes.
 
-### 5.3 Building for Production
+### 3.2 Production Build Verification
 ```bash
+# Compile and validate production bundle
 npm run build
-```
-* Compiles JavaScript chunks into `dist/assets/index-*.js`.
-* Compiles and minifies Tailwind CSS into `dist/assets/index-*.css`.
-* Validates JSX syntax and import resolution.
 
-### 5.4 Previewing the Production Build
-```bash
+# Preview production build locally
 npm run preview
 ```
-* Spins up a local web server serving the optimized `dist/` directory to verify deployment output.
 
----
-
-## 6. Git Commit & Version Control Workflow
-
-When committing code changes to Git, follow this standard procedure to avoid blocking on empty commit messages:
-
-### Standard Command Line Commit
+### 3.3 Running Automated Tests
 ```bash
-# 1. Review changed and untracked files
-git status
+# Run all Frontend tests
+npm test
 
-# 2. Stage modified files
-git add index.html src/components/Hero.jsx src/components/HeroModal.jsx src/components/FeatureCard.jsx PROCEDURE.md
+# Run Frontend tests in watch mode
+npm run test:watch
 
-# 3. Commit with an inline message (prevents COMMIT_EDITMSG from blocking)
-git commit -m "feat(hero): balance hero action buttons and add interactive modals"
+# Run all Backend tests with verbose output
+pytest backend/tests/ -v
 
-# 4. Push changes to remote main branch
-git push origin main
+# Run a specific backend test module
+pytest backend/tests/test_nasa_service.py -v
 ```
-
-> [!TIP]
-> If `git commit` is run without `-m`, Git opens `.git/COMMIT_EDITMSG`. Write a non-empty commit message on line 1, save the file, and close the editor tab to complete the commit.
 
 ---
 
-## 7. Repository Code Conventions
+## 4. Security & Git Hygiene Rules
 
-### 7.1 Tailwind CSS Class Formatting
-All JSX files in this repository format utility classes with **one class per line** inside template strings:
-```jsx
-<div className="
-relative
-z-10
-flex
-items-center
-gap-3
-mt-6
-">
-```
-*This convention preserves readable git diffs and should be maintained in future edits.*
-
-### 7.2 Accessibility (a11y) Standards
-* All clickable `<div>` elements must include `role="button"`, `tabIndex={0}`, and keyboard listeners (`Enter`/`Space`).
-* Decorative icons must include `aria-hidden="true"`.
-* Form inputs must include valid associated `<label>` elements or `aria-label`.
+1. **Never Commit Secrets:** `.env` and `backend/.env` are strictly excluded in `.gitignore`. Use `.env.example` templates.
+2. **Never Commit Virtual Environments:** `venv/` and `backend/venv/` are strictly ignored.
+3. **Never Commit Databases:** `*.db` and `*.sqlite` are strictly ignored.
+4. **Never Commit Model Binaries:** `backend/ml_models/*.pkl` and `*.joblib` are ignored; only `model_metadata.json` is tracked.
+5. **Always Verify Git Status Before Committing:** Run `git status` to ensure only intended code and configuration files are staged.
 
 ---
 
-## 8. Future Milestones & Extension Guide
+## 5. Code Quality & Accessibility Standards
 
-1. **NASA API Ingestion:** Wire `HeroModal.jsx` to live NASA Earthdata API endpoints (CMR / GIBS / POWER).
-2. **Mobile Navigation Drawer:** Implement a hamburger toggle button in `Navbar.jsx` for screens below `md`.
-3. **Authentication Backend:** Connect `LoginCard.jsx` to an identity provider (Firebase Auth, Supabase, or Auth0).
-4. ~~**Hero Image Optimization:** Convert `src/assets/hero-bg.png` (2.6 MB) to WebP or AVIF format.~~ ✅ **Done** — Converted to `hero-bg.webp` (0.23 MB); **90.6% reduction**. `Hero.jsx` updated to import `.webp`.
+* **React 19 & Tailwind CSS v4:** Keep styles unified in `src/index.css` via `@theme`. Avoid inline overrides where tokens exist.
+* **Semantic HTML:** Use proper headings (`<h1>` through `<h3>`), `<button>` tags with types, and form input labels.
+* **Visual Accessibility:** Maintain high contrast ratios on dark backgrounds. All status badges use semantic colors (Green = Favorable, Amber = Moderate, Rose = High Risk/Alert).
+* **Defensive Coding:** API callers must handle network failures gracefully, displaying retry banners rather than blank screens.
+
+---
+
+## 6. Presentation & Demo Walkthrough
+
+When presenting AgriShift AI to judges or evaluators:
+1. **Show Hero & Regional Focus:** Point out the North Bengal agro-ecological context and groundwater challenge.
+2. **Demonstrate District Switching:** Switch between Bogura, Rangpur, Dinajpur, Rajshahi, and Sylhet.
+3. **Inspect Multi-Crop Rankings:** Expand crop cards to show transparent factor scoring for temperature, rainfall, humidity, soil moisture, and solar radiation.
+4. **Demonstrate Climate Risk & What-If Sliders:** Adjust temperature or rainfall overrides to show live risk recalculation.
+5. **Review Bilingual Advisories:** Toggle between English and Bangla guidance.
+6. **Pick Coordinates on Farm Map:** Click a point in Bangladesh and fetch real NASA climate telemetry.
+7. **Demonstrate My Farm Management:** Log in, save a field, and run instant crop analysis.
+8. **Show Automated Testing Suite:** Run `npm test` and `pytest backend/tests/ -v` to prove code reliability and regression safety.

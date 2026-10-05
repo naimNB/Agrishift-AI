@@ -1,0 +1,142 @@
+{
+  "model_name": "RandomForest",
+  "algorithm_family": "RandomForestClassifier",
+  "training_timestamp_utc": "2026-10-05T18:19:13.661388+00:00",
+  "feature_names": {
+    "categorical": [
+      "crop"
+    ],
+    "numerical": [
+      "temp_avg",
+      "precipitation",
+      "humidity",
+      "soil_moisture",
+      "solar_rad"
+    ],
+    "all_input_features": [
+      "crop",
+      "temp_avg",
+      "precipitation",
+      "humidity",
+      "soil_moisture",
+      "solar_rad"
+    ]
+  },
+  "candidate_crops": [
+    "rice",
+    "wheat",
+    "maize",
+    "jute",
+    "potato",
+    "mustard"
+  ],
+  "target_classes": [
+    "High",
+    "Medium",
+    "Low"
+  ],
+  "best_model_metrics": {
+    "test_accuracy": 0.9961111111111111,
+    "test_precision_macro": 0.9961120262371099,
+    "test_precision_weighted": 0.9961120262371099,
+    "test_recall_macro": 0.9961111111111111,
+    "test_recall_weighted": 0.9961111111111111,
+    "test_f1_macro": 0.9961111084104918,
+    "test_f1_weighted": 0.9961111084104919,
+    "cv_5fold_accuracy_mean": 0.9962500000000001,
+    "cv_5fold_accuracy_std": 0.0009419902754340617,
+    "confusion_matrix": [
+      [
+        597,
+        3,
+        0
+      ],
+      [
+        4,
+        596,
+        0
+      ],
+      [
+        0,
+        0,
+        600
+      ]
+    ]
+  },
+  "all_models_comparison": {
+    "LogisticRegression": {
+      "accuracy": 0.8933333333333333,
+      "f1_macro": 0.8938208850673988,
+      "precision_macro": 0.8950426731583397,
+      "recall_macro": 0.8933333333333334,
+      "cv_accuracy_mean": 0.9019444444444444
+    },
+    "RandomForest": {
+      "accuracy": 0.9961111111111111,
+      "f1_macro": 0.9961111084104918,
+      "precision_macro": 0.9961120262371099,
+      "recall_macro": 0.9961111111111111,
+      "cv_accuracy_mean": 0.9962500000000001
+    },
+    "GradientBoosting": {
+      "accuracy": 0.9955555555555555,
+      "f1_macro": 0.9955555432098423,
+      "precision_macro": 0.9955592099171473,
+      "recall_macro": 0.9955555555555556,
+      "cv_accuracy_mean": 0.9961111111111111
+    }
+  },
+  "dataset": {
+    "source": "Programmatic Synthetic Agronomic Simulator (AEZ Bangladesh Rules)",
+    "version": "2.0-synthetic-noisy",
+    "is_synthetic": true,
+    "total_samples": 9000,
+    "train_samples": 7200,
+    "test_samples": 1800,
+    "sampling_method": "Uniform distribution with 5% Gaussian boundary noise across BARC AEZ ranges",
+    "limitations": "CRITICAL ACADEMIC NOTE: This dataset was programmatically generated from agronomic physiological rules rather than an empirical multi-year field trial. While it accurately mirrors established BARC boundaries, real-world microclimate interactions, soil microbiomes, and pest vectors require future validation with empirical farmer yield records."
+  },
+  "inference_schema": {
+    "type": "object",
+    "properties": {
+      "crop": {
+        "type": "string",
+        "enum": [
+          "rice",
+          "wheat",
+          "maize",
+          "jute",
+          "potato",
+          "mustard"
+        ]
+      },
+      "temp_avg": {
+        "type": "number",
+        "unit": "°C"
+      },
+      "precipitation": {
+        "type": "number",
+        "unit": "mm"
+      },
+      "humidity": {
+        "type": "number",
+        "unit": "%"
+      },
+      "soil_moisture": {
+        "type": "number",
+        "unit": "0.0-1.0 fraction"
+      },
+      "solar_rad": {
+        "type": "number",
+        "unit": "kWh/m²/day"
+      }
+    },
+    "required": [
+      "crop",
+      "temp_avg",
+      "precipitation",
+      "humidity",
+      "soil_moisture"
+    ]
+  }
+}
