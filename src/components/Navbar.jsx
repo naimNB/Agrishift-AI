@@ -1,0 +1,166 @@
+import { useState, useEffect } from "react";
+import { Menu, X, Satellite, Clapperboard, ImageIcon } from "lucide-react";
+
+const navLinks = [
+  { label: "Home", href: "#home" },
+  { label: "Features", href: "#features" },
+  { label: "NASA Data", href: "#nasa-data" },
+  { label: "How It Works", href: "#how-it-works" },
+  { label: "Impact", href: "#impact" },
+  { label: "About", href: "#about" },
+];
+
+export default function Navbar({ onOpenModal, bgMode = "normal", onToggleBgMode }) {
+  const isVideo = bgMode === "video";
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <nav
+      className={`sticky top-0 w-full z-40 transition-all duration-300 ${
+        scrolled
+          ? "bg-[#060b17]/95 backdrop-blur-xl border-b border-white/8 shadow-[0_4px_30px_rgba(0,0,0,0.4)]"
+          : "bg-transparent border-b border-transparent"
+      }`}
+    >
+      <div className="max-w-7xl mx-auto flex justify-between items-center px-6 lg:px-10 py-4">
+        {/* Brand */}
+        <a
+          href="#home"
+          className="flex items-center gap-2.5 group focus-visible:outline-2 focus-visible:outline-green-400"
+        >
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/30 group-hover:shadow-green-500/50 transition-all duration-300">
+            <Satellite className="w-4.5 h-4.5 text-white" />
+          </div>
+          <span className="text-xl font-bold tracking-tight" style={{ fontFamily: "Space Grotesk, Inter, sans-serif" }}>
+            Agri<span className="text-green-400">Shift</span>{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">AI</span>
+          </span>
+        </a>
+
+        {/* Desktop Nav Links */}
+        <div className="hidden lg:flex items-center gap-1 text-sm">
+          {navLinks.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              className="relative px-3.5 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/8 transition-all duration-200 group"
+            >
+              {link.label}
+              <span className="absolute inset-x-3 bottom-1 h-px bg-gradient-to-r from-green-400 to-cyan-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left rounded-full" />
+            </a>
+          ))}
+        </div>
+
+        {/* Desktop CTA */}
+        <div className="hidden lg:flex items-center gap-3">
+          {/* ── Video / Normal mode toggle ── */}
+          <button
+            type="button"
+            id="bg-mode-toggle"
+            onClick={onToggleBgMode}
+            title={isVideo ? "Switch to Normal Mode" : "Switch to Video Mode"}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border transition-all duration-300 cursor-pointer ${
+              isVideo
+                ? "bg-emerald-500/15 border-emerald-400/40 text-emerald-300 hover:bg-emerald-500/25"
+                : "bg-white/6 border-white/15 text-gray-400 hover:text-white hover:bg-white/10 hover:border-white/25"
+            }`}
+          >
+            {/* Toggle track */}
+            <span
+              className="relative inline-flex w-8 h-4 rounded-full transition-colors duration-300 shrink-0"
+              style={{ background: isVideo ? "rgba(52,211,153,0.4)" : "rgba(255,255,255,0.12)" }}
+            >
+              <span
+                className="absolute top-0.5 w-3 h-3 rounded-full transition-all duration-300 shadow"
+                style={{
+                  left: isVideo ? "calc(100% - 0.875rem)" : "0.125rem",
+                  background: isVideo ? "#34d399" : "#6b7280",
+                }}
+              />
+            </span>
+            {isVideo ? (
+              <><Clapperboard className="w-3.5 h-3.5" /> Video BG</>
+            ) : (
+              <><ImageIcon className="w-3.5 h-3.5" /> Normal</>  
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onOpenModal && onOpenModal("satellite")}
+            className="px-5 py-2.5 rounded-xl text-sm font-semibold text-green-300 border border-green-500/30 bg-green-500/10 hover:bg-green-500/20 hover:border-green-400/50 transition-all duration-200 cursor-pointer"
+          >
+            Live Telemetry
+          </button>
+          <a
+            href="#features"
+            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-black font-bold text-sm shadow-lg shadow-green-500/25 hover:shadow-green-400/40 transition-all duration-200 focus-visible:outline-2 focus-visible:outline-green-400"
+          >
+            Get Started →
+          </a>
+        </div>
+
+        {/* Mobile Toggle */}
+        <button
+          type="button"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="lg:hidden p-2.5 rounded-xl bg-white/8 hover:bg-white/14 border border-white/10 text-white transition-all duration-200"
+          aria-label="Toggle navigation menu"
+        >
+          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+      </div>
+
+      {/* Mobile Drawer */}
+      <div
+        className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+          mobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="px-6 pb-6 pt-2 border-t border-white/8 bg-[#060b17]/98 backdrop-blur-xl flex flex-col gap-1">
+          {navLinks.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              onClick={() => setMobileMenuOpen(false)}
+              className="py-3 px-4 rounded-xl text-gray-200 hover:text-white hover:bg-white/8 transition-all duration-200 text-sm font-medium"
+            >
+              {link.label}
+            </a>
+          ))}
+          <div className="section-divider my-3" />
+          {/* Mobile mode toggle */}
+          <button
+            type="button"
+            onClick={() => { onToggleBgMode(); setMobileMenuOpen(false); }}
+            className={`py-3 px-4 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200 ${
+              isVideo
+                ? "bg-emerald-500/15 border border-emerald-400/30 text-emerald-300"
+                : "bg-white/6 border border-white/12 text-gray-300"
+            }`}
+          >
+            {isVideo ? (
+              <><Clapperboard className="w-4 h-4" /> Video BG Active — Switch to Normal</>
+            ) : (
+              <><ImageIcon className="w-4 h-4" /> Normal Mode — Switch to Video BG</>
+            )}
+          </button>
+          <a
+            href="#features"
+            onClick={() => setMobileMenuOpen(false)}
+            className="py-3 text-center rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-black font-bold text-sm shadow-lg shadow-green-500/25 transition-all duration-200"
+          >
+            Get Started →
+          </a>
+        </div>
+      </div>
+    </nav>
+  );
+}
