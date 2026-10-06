@@ -151,14 +151,13 @@ export default function About({ onOpenModal }) {
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4 mt-8">
-              <button
-                type="button"
-                onClick={() => onOpenModal && onOpenModal("advisory")}
+              <a
+                href="#dashboard"
                 className="inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-black font-bold text-base shadow-xl shadow-green-500/30 hover:shadow-green-400/50 hover:scale-[1.03] transition-all duration-300 cursor-pointer"
               >
                 <Sprout className="w-5 h-5" />
                 Explore Demo Farm
-              </button>
+              </a>
 
               <button
                 type="button"

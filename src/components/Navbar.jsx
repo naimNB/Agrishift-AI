@@ -1,24 +1,20 @@
 import { useState, useEffect } from "react";
-import { Menu, X, Satellite, Clapperboard, ImageIcon, LogIn, LogOut, User } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { Menu, X, Satellite, Clapperboard, ImageIcon } from "lucide-react";
 
 const navLinks = [
   { label: "Home", href: "#home" },
   { label: "Dashboard", href: "#dashboard" },
-  { label: "Farm Map", href: "#farm-map" },
-  { label: "My Farm", href: "#my-farm" },
-  { label: "Crop Ranking", href: "#crop-ranking" },
+  { label: "NASA Data", href: "#nasa-data" },
+  { label: "Crop Intelligence", href: "#crop-recommendation" },
   { label: "Climate Risk", href: "#climate-risk" },
-  { label: "Advisory", href: "#farmer-advisory" },
-  { label: "Features", href: "#features" },
-  { label: "Earth Sensors", href: "#nasa-data" },
+  { label: "Farmer Advisory", href: "#farmer-advisory" },
+  { label: "Map", href: "#farm-map" },
+  { label: "My Farm", href: "#my-farm" },
   { label: "How It Works", href: "#how-it-works" },
-  { label: "Impact", href: "#impact" },
   { label: "About", href: "#about" },
 ];
 
 export default function Navbar({ onOpenModal, bgMode = "normal", onToggleBgMode }) {
-  const { user, logout, openAuthModal, isAuthenticated } = useAuth();
   const isVideo = bgMode === "video";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -66,7 +62,7 @@ export default function Navbar({ onOpenModal, bgMode = "normal", onToggleBgMode 
           ))}
         </div>
 
-        {/* Desktop CTA & Auth */}
+        {/* Desktop CTA */}
         <div className="hidden lg:flex items-center gap-3">
           {/* ── Video / Normal mode toggle ── */}
           <button
@@ -100,41 +96,8 @@ export default function Navbar({ onOpenModal, bgMode = "normal", onToggleBgMode 
             )}
           </button>
 
-          {/* Auth State Button */}
-          {isAuthenticated && user ? (
-            <div className="flex items-center gap-2 pl-2 border-l border-white/10">
-              <a
-                href="#my-farm"
-                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/6 hover:bg-white/12 border border-white/10 transition"
-                title="View My Farm"
-              >
-                <div className="w-6 h-6 rounded-full bg-emerald-500/20 border border-emerald-400/50 flex items-center justify-center text-emerald-300 font-bold text-xs">
-                  {user.name ? user.name.charAt(0).toUpperCase() : "U"}
-                </div>
-                <span className="text-xs font-semibold text-gray-200">{user.name.split(" ")[0]}</span>
-              </a>
-              <button
-                type="button"
-                onClick={logout}
-                className="p-2 rounded-xl text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition cursor-pointer"
-                title="Sign Out"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => openAuthModal("login")}
-              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold bg-white/8 hover:bg-white/14 border border-white/15 text-gray-200 hover:text-white transition cursor-pointer"
-            >
-              <LogIn className="w-3.5 h-3.5 text-emerald-400" />
-              Sign In
-            </button>
-          )}
-
           <a
-            href="#features"
+            href="#dashboard"
             className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-black font-bold text-sm shadow-lg shadow-green-500/25 hover:shadow-green-400/40 transition-all duration-200 focus-visible:outline-2 focus-visible:outline-green-400"
           >
             Get Started →
@@ -171,40 +134,6 @@ export default function Navbar({ onOpenModal, bgMode = "normal", onToggleBgMode 
           ))}
 
           <div className="section-divider my-2" />
-
-          {/* Mobile Auth Button */}
-          {isAuthenticated && user ? (
-            <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 text-xs">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center">
-                  {user.name.charAt(0).toUpperCase()}
-                </div>
-                <span className="font-semibold text-white">{user.name}</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  logout();
-                  setMobileMenuOpen(false);
-                }}
-                className="text-red-400 hover:underline text-xs"
-              >
-                Sign Out
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => {
-                openAuthModal("login");
-                setMobileMenuOpen(false);
-              }}
-              className="w-full py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-sm text-center transition flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <LogIn className="w-4 h-4" />
-              Sign In / Register
-            </button>
-          )}
 
           {/* Mobile mode toggle */}
           <button

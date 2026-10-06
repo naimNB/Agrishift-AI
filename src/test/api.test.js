@@ -244,4 +244,36 @@ describe("API Service (src/services/api.js)", () => {
       );
     });
   });
+
+  describe("Farm Portfolio Local Storage CRUD", () => {
+    it("should retrieve default farms when unauthenticated", async () => {
+      const farms = await api.getFarms();
+      expect(Array.isArray(farms)).toBe(true);
+      expect(farms.length).toBeGreaterThan(0);
+      expect(farms[0]).toHaveProperty("farm_name");
+    });
+
+    it("should create, update, and delete farm parcels without login", async () => {
+      const newFarm = await api.createFarm({
+        farm_name: "Test Paddy Parcel",
+        district: "bogura",
+        latitude: 24.8465,
+        longitude: 89.3773,
+        area: 2.0,
+        area_unit: "bigha",
+        current_crop: "Rice",
+      });
+      expect(newFarm.farm_name).toBe("Test Paddy Parcel");
+      expect(newFarm.id).toBeDefined();
+
+      const updated = await api.updateFarm(newFarm.id, {
+        farm_name: "Updated Paddy Parcel",
+      });
+      expect(updated.farm_name).toBe("Updated Paddy Parcel");
+
+      const delRes = await api.deleteFarm(newFarm.id);
+      expect(delRes.detail).toBe("Farm deleted successfully");
+    });
+  });
 });
+

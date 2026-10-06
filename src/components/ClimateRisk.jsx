@@ -142,7 +142,6 @@ export default function ClimateRisk({
   if (embedded) {
     return (
       <div
-        id="climate-risk"
         className="p-6 rounded-3xl bg-slate-900/90 border border-white/10 shadow-2xl relative flex flex-col"
       >
         {/* Header */}

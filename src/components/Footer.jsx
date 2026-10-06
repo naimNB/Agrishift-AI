@@ -4,26 +4,29 @@ const navGroups = [
   {
     label: "Product",
     links: [
-      { label: "Features", href: "#features" },
-      { label: "Climate Data", href: "#climate-dashboard" },
-      { label: "Earth Sensors", href: "#nasa-data" },
-      { label: "How It Works", href: "#how-it-works" },
+      { label: "Dashboard", href: "#dashboard" },
+      { label: "Farm Map", href: "#farm-map" },
+      { label: "Crop Intelligence", href: "#crop-recommendation" },
+      { label: "Climate Risk", href: "#climate-risk" },
+      { label: "Farmer Advisory", href: "#farmer-advisory" },
+      { label: "Historical Trends", href: "#historical-trends" },
     ],
   },
   {
-    label: "Results",
+    label: "Intelligence",
     links: [
-      { label: "Impact Stats", href: "#impact" },
-      { label: "Case Studies", href: "#impact" },
-      { label: "ROI Calculator", href: "#impact" },
+      { label: "NASA POWER Data", href: "#nasa-data" },
+      { label: "Core Features", href: "#features" },
+      { label: "How It Works", href: "#how-it-works" },
+      { label: "My Farm Portfolio", href: "#my-farm" },
     ],
   },
   {
     label: "Company",
     links: [
-      { label: "About Us", href: "#about" },
-      { label: "Contact Sales", href: "#about" },
-      { label: "Privacy Policy", href: "#" },
+      { label: "About AgriShift", href: "#about" },
+      { label: "Regional Impact", href: "#impact" },
+      { label: "Contact Advisory", href: "#about" },
     ],
   },
 ];

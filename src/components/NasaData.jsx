@@ -86,14 +86,13 @@ export default function NasaData({ onOpenModal }) {
               <Globe className="w-4 h-4" />
               Sensor Specs
             </button>
-            <button
-              type="button"
-              onClick={() => onOpenModal && onOpenModal("satellite")}
+            <a
+              href="#dashboard"
               className="px-6 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-black text-sm font-bold flex items-center gap-2 shadow-lg shadow-green-500/25 hover:shadow-green-400/40 transition-all duration-200 cursor-pointer"
             >
               Live Telemetry
               <ArrowRight className="w-4 h-4" />
-            </button>
+            </a>
           </div>
         </div>
 

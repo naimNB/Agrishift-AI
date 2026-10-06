@@ -176,5 +176,5 @@ When presenting AgriShift AI to judges or evaluators:
 4. **Demonstrate Climate Risk & What-If Sliders:** Adjust temperature or rainfall overrides to show live risk recalculation.
 5. **Review Bilingual Advisories:** Toggle between English and Bangla guidance.
 6. **Pick Coordinates on Farm Map:** Click a point in Bangladesh and fetch real NASA climate telemetry.
-7. **Demonstrate My Farm Management:** Log in, save a field, and run instant crop analysis.
+7. **Demonstrate My Farm Management:** Save a farm parcel, and run instant crop analysis without requiring login.
 8. **Show Automated Testing Suite:** Run `npm test` and `pytest backend/tests/ -v` to prove code reliability and regression safety.

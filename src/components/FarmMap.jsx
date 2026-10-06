@@ -420,7 +420,7 @@ export default function FarmMap({
     setTimeout(() => setSyncNotice(null), 4000);
 
     // Scroll to dashboard
-    const el = document.getElementById("climate-dashboard");
+    const el = document.getElementById("dashboard") || document.getElementById("climate-dashboard");
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -460,7 +460,7 @@ export default function FarmMap({
     setSyncNotice("Crop Ranking Engine updated with NASA telemetry.");
     setTimeout(() => setSyncNotice(null), 4000);
 
-    const el = document.getElementById("crop-ranking");
+    const el = document.getElementById("crop-recommendation") || document.getElementById("crop-ranking");
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -470,7 +470,7 @@ export default function FarmMap({
   // Embedded view for the Unified Application Dashboard
   if (embedded) {
     return (
-      <div id="farm-map" className="rounded-3xl bg-slate-900/90 border border-white/10 overflow-hidden shadow-2xl relative flex flex-col">
+      <div className="rounded-3xl bg-slate-900/90 border border-white/10 overflow-hidden shadow-2xl relative flex flex-col">
         {/* Map Header Overlay Bar */}
         <div className="p-4 bg-slate-950/90 border-b border-white/10 flex flex-wrap items-center justify-between gap-3 z-10 backdrop-blur-md">
           <div className="flex items-center gap-2">

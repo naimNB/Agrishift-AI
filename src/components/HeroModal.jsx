@@ -349,7 +349,11 @@ export default function HeroModal({ type, onClose }) {
               </button>
               <button
                 type="button"
-                onClick={onClose}
+                onClick={() => {
+                  onClose();
+                  const el = document.getElementById("nasa-data");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
                 className="
                 px-6
                 py-2.5
@@ -363,6 +367,7 @@ export default function HeroModal({ type, onClose }) {
                 flex
                 items-center
                 gap-1.5
+                cursor-pointer
                 "
               >
                 Full Satellite Deck <ArrowRight className="w-4 h-4" />
@@ -568,7 +573,11 @@ export default function HeroModal({ type, onClose }) {
             ">
               <button
                 type="button"
-                onClick={onClose}
+                onClick={() => {
+                  onClose();
+                  const el = document.getElementById("crop-recommendation");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
                 className="
                 px-6
                 py-2.5
@@ -579,6 +588,7 @@ export default function HeroModal({ type, onClose }) {
                 text-sm
                 font-bold
                 transition
+                cursor-pointer
                 "
               >
                 Apply To My Fields
@@ -805,7 +815,20 @@ export default function HeroModal({ type, onClose }) {
             ">
               <button
                 type="button"
-                onClick={onClose}
+                onClick={() => {
+                  const blob = new Blob(
+                    [
+                      "AgriShift AI — Field Audit & Case Studies Whitepaper\n\nNASA POWER Agroclimatology & Regional Crop Adaptation in Bangladesh.\n\nKey Findings:\n1. Barind Boro Rice: 28% water pumping energy reduction with AWD & root-zone soil wetness.\n2. Rangpur Rabi Sowing: Crop rotation shift to hybrid maize avoids late-season heat stress.\n3. Bogura & Dinajpur: Multi-crop suitability scoring improves seasonal margin resilience.\n\nData Source: NASA Langley Research Center POWER Project Daily Agroclimatology API.\nhttps://power.larc.nasa.gov/\n"
+                    ],
+                    { type: "text/plain" }
+                  );
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = "AgriShift_AI_Field_Audit_Whitepaper.txt";
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }}
                 className="
                 px-6
                 py-2.5
@@ -816,9 +839,10 @@ export default function HeroModal({ type, onClose }) {
                 text-sm
                 font-bold
                 transition
+                cursor-pointer
                 "
               >
-                Download Whitepaper (PDF)
+                Download Whitepaper (TXT)
               </button>
             </div>
           </div>
@@ -1093,7 +1117,11 @@ export default function HeroModal({ type, onClose }) {
             ">
               <button
                 type="button"
-                onClick={onClose}
+                onClick={() => {
+                  onClose();
+                  const el = document.getElementById("dashboard");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
                 className="
                 px-6
                 py-2.5
@@ -1104,6 +1132,7 @@ export default function HeroModal({ type, onClose }) {
                 text-sm
                 font-bold
                 transition
+                cursor-pointer
                 "
               >
                 Generate Detailed Farm Audit

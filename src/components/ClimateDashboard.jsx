@@ -23,10 +23,8 @@ import {
   Sprout,
   ShieldAlert,
   Lightbulb,
-  LogIn,
 } from "lucide-react";
 import { api } from "../services/api";
-import { useAuth } from "../context/AuthContext";
 import HistoricalClimateTrends from "./HistoricalClimateTrends";
 import FarmMap from "./FarmMap";
 import CropRecommendation from "./CropRecommendation";
@@ -111,8 +109,7 @@ function getDatePresets() {
 export default function ClimateDashboard() {
   const presets = getDatePresets();
 
-  // Authentication Context for logged-in user state and farm portfolio
-  const { user, isAuthenticated, openAuthModal } = useAuth();
+  // Saved farm portfolio state
   const [userFarms, setUserFarms] = useState([]);
   const [selectedFarmId, setSelectedFarmId] = useState("");
   const [loadingFarms, setLoadingFarms] = useState(false);
@@ -131,10 +128,10 @@ export default function ClimateDashboard() {
   const [showTelemetryTable, setShowTelemetryTable] = useState(false);
   const [lastFetchedAt, setLastFetchedAt] = useState(null);
 
-  // Fetch saved farms when authenticated
+  // Fetch saved farms from local storage or backend
   useEffect(() => {
     let isMounted = true;
-    if (isAuthenticated && user) {
+    const loadFarms = () => {
       setLoadingFarms(true);
       api
         .getFarms()
@@ -149,14 +146,20 @@ export default function ClimateDashboard() {
         .finally(() => {
           if (isMounted) setLoadingFarms(false);
         });
-    } else {
-      setUserFarms([]);
-      setSelectedFarmId("");
-    }
+    };
+
+    loadFarms();
+
+    const handleFarmsUpdated = () => {
+      loadFarms();
+    };
+
+    window.addEventListener("agrishift:farms-updated", handleFarmsUpdated);
     return () => {
       isMounted = false;
+      window.removeEventListener("agrishift:farms-updated", handleFarmsUpdated);
     };
-  }, [isAuthenticated, user]);
+  }, []);
 
   // Fetch NASA climate telemetry from FastAPI backend
   const fetchTelemetry = useCallback(
@@ -194,6 +197,31 @@ export default function ClimateDashboard() {
       fetchTelemetry(selectedDistrict, startDate, endDate);
     }
   }, [selectedDistrict, startDate, endDate, customCoords, fetchTelemetry]);
+
+  // Global event listener for coordinate / district loading from FarmMap and MyFarmManager
+  useEffect(() => {
+    const handleLoadClimateLocation = (e) => {
+      const { district, lat, lon, label } = e.detail || {};
+      if (lat != null && lon != null) {
+        setCustomCoords({
+          lat: parseFloat(lat),
+          lon: parseFloat(lon),
+          label: label || `GPS (${parseFloat(lat).toFixed(2)}°, ${parseFloat(lon).toFixed(2)}°)`,
+          districtId: district || selectedDistrict,
+          isCustom: true,
+        });
+        if (district) {
+          setSelectedDistrict(district);
+        }
+      } else if (district) {
+        setCustomCoords(null);
+        setSelectedDistrict(district);
+      }
+    };
+
+    window.addEventListener("agrishift:load-climate-location", handleLoadClimateLocation);
+    return () => window.removeEventListener("agrishift:load-climate-location", handleLoadClimateLocation);
+  }, [selectedDistrict]);
 
   // Handle farm selection from logged-in user farm portfolio
   const handleSelectFarm = (farmId) => {
@@ -363,7 +391,7 @@ export default function ClimateDashboard() {
         <div className="p-5 sm:p-6 rounded-3xl bg-slate-900/90 border border-white/10 backdrop-blur-xl shadow-xl shadow-black/40 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
             {/* 1. Location Selector (District Hub) */}
-            <div className={`${isAuthenticated && user ? "md:col-span-4" : "md:col-span-5"}`}>
+            <div className="md:col-span-4">
               <div className="flex items-center justify-between mb-1.5">
                 <label
                   htmlFor="dashboard-district-select"
@@ -417,54 +445,41 @@ export default function ClimateDashboard() {
               </div>
             </div>
 
-            {/* 2. Farm Selector (if logged in) */}
-            <div className={`${isAuthenticated && user ? "md:col-span-4" : "md:col-span-3"}`}>
+            {/* 2. Farm Selector */}
+            <div className="md:col-span-4">
               <div className="flex items-center justify-between mb-1.5">
                 <label className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-400">
                   <Tractor className="w-3.5 h-3.5 text-emerald-400" />
                   Farm Parcel Selector
                 </label>
-                {isAuthenticated && (
-                  <a
-                    href="#my-farm"
-                    className="text-[11px] text-emerald-400 hover:underline cursor-pointer"
-                  >
-                    Manage Farms
-                  </a>
-                )}
+                <a
+                  href="#my-farm"
+                  className="text-[11px] text-emerald-400 hover:underline cursor-pointer"
+                >
+                  Manage Farms
+                </a>
               </div>
 
-              {isAuthenticated && user ? (
-                <div className="relative">
-                  <select
-                    value={selectedFarmId}
-                    onChange={(e) => handleSelectFarm(e.target.value)}
-                    disabled={loadingFarms || userFarms.length === 0}
-                    className="w-full appearance-none bg-black/40 border border-emerald-500/30 rounded-xl px-3.5 py-2.5 pr-10 text-xs font-semibold text-white focus:outline-none focus:border-emerald-400 transition cursor-pointer disabled:opacity-60"
-                  >
-                    <option value="">
-                      {userFarms.length === 0
-                        ? "(No farms saved yet)"
-                        : "— Select Registered Farm —"}
-                    </option>
-                    {userFarms.map((f) => (
-                      <option key={f.id} value={f.id}>
-                        🌾 {f.farm_name} ({f.district} • {f.area} {f.area_unit})
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => openAuthModal("login")}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-dashed border-white/20 text-xs font-semibold text-emerald-300 hover:text-white transition cursor-pointer"
+              <div className="relative">
+                <select
+                  value={selectedFarmId}
+                  onChange={(e) => handleSelectFarm(e.target.value)}
+                  disabled={loadingFarms || userFarms.length === 0}
+                  className="w-full appearance-none bg-black/40 border border-emerald-500/30 rounded-xl px-3.5 py-2.5 pr-10 text-xs font-semibold text-white focus:outline-none focus:border-emerald-400 transition cursor-pointer disabled:opacity-60"
                 >
-                  <LogIn className="w-3.5 h-3.5 text-emerald-400" />
-                  Sign In to load your farms
-                </button>
-              )}
+                  <option value="">
+                    {userFarms.length === 0
+                      ? "(No farms saved yet)"
+                      : "— Select Registered Farm —"}
+                  </option>
+                  {userFarms.map((f) => (
+                    <option key={f.id} value={f.id}>
+                      🌾 {f.farm_name} ({f.district} • {f.area} {f.area_unit})
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
             </div>
 
             {/* Observation Period Presets */}
@@ -506,8 +521,14 @@ export default function ClimateDashboard() {
             </div>
             <button
               type="button"
-              onClick={() => fetchTelemetry(selectedDistrict, startDate, endDate)}
-              className="px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-xs font-semibold text-white transition"
+              onClick={() => {
+                if (customCoords) {
+                  fetchTelemetry(null, startDate, endDate, customCoords.lat, customCoords.lon);
+                } else {
+                  fetchTelemetry(selectedDistrict, startDate, endDate);
+                }
+              }}
+              className="px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-xs font-semibold text-white transition cursor-pointer"
             >
               Retry
             </button>
@@ -618,7 +639,7 @@ export default function ClimateDashboard() {
           {/* ══ LEFT COLUMN (7 Cols): Map, Historical Climate Charts, Farmer Advisory ══ */}
           <div className="lg:col-span-7 space-y-8">
             {/* 8. Interactive Map Component */}
-            <div>
+            <div id="farm-map" className="scroll-mt-24">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-xs font-semibold uppercase tracking-wider text-gray-400 flex items-center gap-2">
                   <Compass className="w-4 h-4 text-emerald-400" />
@@ -644,7 +665,7 @@ export default function ClimateDashboard() {
             </div>
 
             {/* 4. Historical Climate Charts Component */}
-            <div>
+            <div id="historical-trends" className="scroll-mt-24">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-xs font-semibold uppercase tracking-wider text-gray-400 flex items-center gap-2">
                   <Activity className="w-4 h-4 text-cyan-400" />
@@ -662,7 +683,7 @@ export default function ClimateDashboard() {
             </div>
 
             {/* 7. Actionable Farmer Advisory Component */}
-            <div>
+            <div id="farmer-advisory" className="scroll-mt-24">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-xs font-semibold uppercase tracking-wider text-gray-400 flex items-center gap-2">
                   <Lightbulb className="w-4 h-4 text-cyan-400" />
@@ -679,7 +700,7 @@ export default function ClimateDashboard() {
           {/* ══ RIGHT COLUMN (5 Cols): Climate Risk Intelligence, Crop Ranking Engine ══ */}
           <div className="lg:col-span-5 space-y-8">
             {/* 6. Climate Risk Intelligence Component */}
-            <div>
+            <div id="climate-risk" className="scroll-mt-24">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-xs font-semibold uppercase tracking-wider text-gray-400 flex items-center gap-2">
                   <ShieldAlert className="w-4 h-4 text-rose-400" />
@@ -693,7 +714,7 @@ export default function ClimateDashboard() {
             </div>
 
             {/* 5. Crop Ranking & Suitability Component */}
-            <div>
+            <div id="crop-recommendation" className="scroll-mt-24">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-xs font-semibold uppercase tracking-wider text-gray-400 flex items-center gap-2">
                   <Sprout className="w-4 h-4 text-emerald-400" />

@@ -10,6 +10,36 @@ export const API_BASE_URL =
   "http://localhost:8000";
 
 export const TOKEN_STORAGE_KEY = "agrishift_auth_token";
+export const FARMS_STORAGE_KEY = "agrishift_saved_farms";
+
+export const DEFAULT_FARMS = [
+  {
+    id: 1,
+    farm_name: "Barind Maize Field",
+    district: "rajshahi",
+    latitude: 24.3636,
+    longitude: 88.6241,
+    area: 4.5,
+    area_unit: "bigha",
+    soil_type: "High Barind Clay",
+    current_crop: "Maize",
+    planting_date: "2026-03-01",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 2,
+    farm_name: "Karatoya Basin Rice Parcel",
+    district: "bogura",
+    latitude: 24.8465,
+    longitude: 89.3773,
+    area: 3.0,
+    area_unit: "bigha",
+    soil_type: "Alluvial Loam",
+    current_crop: "Rice",
+    planting_date: "2026-02-15",
+    created_at: new Date().toISOString(),
+  },
+];
 
 export function getStoredToken() {
   try {
@@ -28,6 +58,31 @@ export function setStoredToken(token) {
     }
   } catch {
     // Ignore localStorage errors
+  }
+}
+
+export function getStoredFarms() {
+  try {
+    const raw = localStorage.getItem(FARMS_STORAGE_KEY);
+    if (!raw) {
+      localStorage.setItem(FARMS_STORAGE_KEY, JSON.stringify(DEFAULT_FARMS));
+      return DEFAULT_FARMS;
+    }
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : DEFAULT_FARMS;
+  } catch {
+    return DEFAULT_FARMS;
+  }
+}
+
+export function setStoredFarms(farms) {
+  try {
+    localStorage.setItem(FARMS_STORAGE_KEY, JSON.stringify(farms));
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("agrishift:farms-updated", { detail: farms }));
+    }
+  } catch {
+    // Ignore storage errors
   }
 }
 
@@ -111,33 +166,127 @@ export const api = {
 
   /**
    * Farm Management (CRUD)
+   * Seamlessly persists to local browser storage without requiring login.
+   * If an auth token is present, syncs with backend database.
    */
   async getFarms() {
-    return request("/api/farms");
+    const token = getStoredToken();
+    if (token) {
+      try {
+        return await request("/api/farms");
+      } catch (err) {
+        console.warn("Backend getFarms unavailable, using local farms:", err.message);
+      }
+    }
+    return getStoredFarms();
   },
 
   async getFarm(farmId) {
-    return request(`/api/farms/${farmId}`);
+    const token = getStoredToken();
+    if (token) {
+      try {
+        return await request(`/api/farms/${farmId}`);
+      } catch (err) {
+        console.warn("Backend getFarm unavailable, using local farms:", err.message);
+      }
+    }
+    const farms = getStoredFarms();
+    const found = farms.find((f) => String(f.id) === String(farmId));
+    if (!found) throw new Error(`Farm with id ${farmId} not found.`);
+    return found;
   },
 
   async createFarm(farmData) {
-    return request("/api/farms", {
-      method: "POST",
-      body: JSON.stringify(farmData),
-    });
+    const token = getStoredToken();
+    if (token) {
+      try {
+        const created = await request("/api/farms", {
+          method: "POST",
+          body: JSON.stringify(farmData),
+        });
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("agrishift:farms-updated", { detail: created }));
+        }
+        return created;
+      } catch (err) {
+        console.warn("Backend createFarm unavailable, saving to local storage:", err.message);
+      }
+    }
+    const farms = getStoredFarms();
+    const created = {
+      id: Date.now(),
+      farm_name: (farmData.farm_name || "").trim(),
+      district: (farmData.district || "bogura").trim(),
+      latitude: parseFloat(farmData.latitude) || 0,
+      longitude: parseFloat(farmData.longitude) || 0,
+      area: farmData.area != null && farmData.area !== "" ? parseFloat(farmData.area) : null,
+      area_unit: farmData.area_unit || "bigha",
+      soil_type: farmData.soil_type || null,
+      current_crop: farmData.current_crop || null,
+      planting_date: farmData.planting_date || null,
+      created_at: new Date().toISOString(),
+    };
+    const updated = [created, ...farms];
+    setStoredFarms(updated);
+    return created;
   },
 
   async updateFarm(farmId, farmData) {
-    return request(`/api/farms/${farmId}`, {
-      method: "PUT",
-      body: JSON.stringify(farmData),
+    const token = getStoredToken();
+    if (token) {
+      try {
+        const updated = await request(`/api/farms/${farmId}`, {
+          method: "PUT",
+          body: JSON.stringify(farmData),
+        });
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("agrishift:farms-updated", { detail: updated }));
+        }
+        return updated;
+      } catch (err) {
+        console.warn("Backend updateFarm unavailable, saving to local storage:", err.message);
+      }
+    }
+    const farms = getStoredFarms();
+    let updatedFarm = null;
+    const updated = farms.map((f) => {
+      if (String(f.id) === String(farmId)) {
+        updatedFarm = {
+          ...f,
+          ...farmData,
+          latitude: farmData.latitude != null ? parseFloat(farmData.latitude) : f.latitude,
+          longitude: farmData.longitude != null ? parseFloat(farmData.longitude) : f.longitude,
+          area: farmData.area != null && farmData.area !== "" ? parseFloat(farmData.area) : f.area,
+          updated_at: new Date().toISOString(),
+        };
+        return updatedFarm;
+      }
+      return f;
     });
+    if (!updatedFarm) throw new Error(`Farm with id ${farmId} not found.`);
+    setStoredFarms(updated);
+    return updatedFarm;
   },
 
   async deleteFarm(farmId) {
-    return request(`/api/farms/${farmId}`, {
-      method: "DELETE",
-    });
+    const token = getStoredToken();
+    if (token) {
+      try {
+        const result = await request(`/api/farms/${farmId}`, {
+          method: "DELETE",
+        });
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("agrishift:farms-updated", { detail: { id: farmId } }));
+        }
+        return result;
+      } catch (err) {
+        console.warn("Backend deleteFarm unavailable, updating local storage:", err.message);
+      }
+    }
+    const farms = getStoredFarms();
+    const updated = farms.filter((f) => String(f.id) !== String(farmId));
+    setStoredFarms(updated);
+    return { detail: "Farm deleted successfully", id: farmId };
   },
   /**
    * Fetch list of supported agricultural districts in Bangladesh

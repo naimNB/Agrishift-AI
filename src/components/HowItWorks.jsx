@@ -129,14 +129,13 @@ export default function HowItWorks({ onOpenModal }) {
               Test how AgriShift AI recommends crops and manages water based on your soil profile.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => onOpenModal && onOpenModal("advisory")}
+          <a
+            href="#crop-recommendation"
             className="shrink-0 inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-black font-bold text-sm shadow-xl shadow-green-500/30 hover:shadow-green-400/50 hover:scale-[1.04] transition-all duration-300 cursor-pointer"
           >
-            Launch AI Simulator
+            Launch Crop Intelligence
             <ArrowRight className="w-4 h-4" />
-          </button>
+          </a>
         </div>
       </div>
     </section>

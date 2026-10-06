@@ -1,4 +1,4 @@
-import { Satellite, Sprout, Droplets, BrainCircuit, BarChart3, Shield } from "lucide-react";
+import { Satellite, Sprout, Droplets, BrainCircuit, BarChart3, Shield, ArrowRight } from "lucide-react";
 
 const cards = [
   {
@@ -12,6 +12,8 @@ const cards = [
       "Real-time NASA Earth observation data tracking plant health (NDVI) and field conditions — from 400 miles up.",
     badge: "Real-Time",
     badgeColor: "text-cyan-300 bg-cyan-500/10 border-cyan-500/20",
+    actionText: "Explore NASA Data",
+    targetHref: "#nasa-data",
   },
   {
     icon: BrainCircuit,
@@ -24,6 +26,8 @@ const cards = [
       "Deep neural networks match your soil composition and regional climate to the highest-yielding crop varieties.",
     badge: "AI-Powered",
     badgeColor: "text-green-300 bg-green-500/10 border-green-500/20",
+    actionText: "Crop Intelligence Engine",
+    targetHref: "#crop-recommendation",
   },
   {
     icon: Droplets,
@@ -36,6 +40,8 @@ const cards = [
       "NASA agroclimate telemetry measures topsoil and root-zone moisture to optimize irrigation scheduling and groundwater conservation.",
     badge: "Root-Zone Index",
     badgeColor: "text-blue-300 bg-blue-500/10 border-blue-500/20",
+    actionText: "Inspect Moisture Trends",
+    targetHref: "#historical-trends",
   },
   {
     icon: BarChart3,
@@ -48,6 +54,8 @@ const cards = [
       "Predictive models combine temperature, precipitation, and moisture trends with regional crop thresholds to evaluate seasonal viability.",
     badge: "Suitability Model",
     badgeColor: "text-amber-300 bg-amber-500/10 border-amber-500/20",
+    actionText: "Analyze Climate Risk",
+    targetHref: "#climate-risk",
   },
   {
     icon: Sprout,
@@ -60,6 +68,8 @@ const cards = [
       "Monitoring canopy vegetative vitality, thermal stress, and soil texture constraints across regional agricultural zones.",
     badge: "Regional Zones",
     badgeColor: "text-emerald-300 bg-emerald-500/10 border-emerald-500/20",
+    actionText: "Interactive GIS Farm Map",
+    targetHref: "#farm-map",
   },
   {
     icon: Shield,
@@ -72,6 +82,8 @@ const cards = [
       "Early-warning systems detect frost, drought, and flood risk events, giving you a 5–14 day planning window.",
     badge: "Early Warning",
     badgeColor: "text-purple-300 bg-purple-500/10 border-purple-500/20",
+    actionText: "View Farmer Advisories",
+    targetHref: "#farmer-advisory",
   },
 ];
 
@@ -113,7 +125,7 @@ export default function Features() {
             return (
               <div
                 key={card.title}
-                className={`group relative p-7 rounded-3xl glass-card ${card.border} transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl ${card.glow} cursor-default overflow-hidden`}
+                className={`group relative p-7 rounded-3xl glass-card ${card.border} transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl ${card.glow} overflow-hidden flex flex-col justify-between`}
               >
                 {/* Card inner glow gradient */}
                 <div className={`absolute inset-0 bg-gradient-to-br ${card.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl`} aria-hidden="true" />
@@ -136,6 +148,16 @@ export default function Features() {
                   <p className="text-sm text-gray-400 mt-2.5 leading-relaxed group-hover:text-gray-300 transition-colors duration-200">
                     {card.description}
                   </p>
+                </div>
+
+                <div className="relative z-10 pt-4 mt-5 border-t border-white/8">
+                  <a
+                    href={card.targetHref}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 group/link transition-colors cursor-pointer"
+                  >
+                    <span>{card.actionText}</span>
+                    <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-1" />
+                  </a>
                 </div>
               </div>
             );

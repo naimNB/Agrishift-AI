@@ -13,19 +13,12 @@ import {
   Sliders,
   CheckCircle2,
   AlertCircle,
-  LogIn,
-  UserPlus,
-  LogOut,
-  User,
   ArrowRight,
   RefreshCw,
   Sparkles,
-  ShieldCheck,
   X,
 } from "lucide-react";
 import { api } from "../services/api";
-import { useAuth } from "../context/AuthContext";
-import LoginCard from "./LoginCard";
 
 const DISTRICT_COORDS = {
   bogura: { lat: 24.8465, lon: 89.3773 },
@@ -39,9 +32,6 @@ const COMMON_CROPS = ["Rice", "Potato", "Mustard", "Wheat", "Maize", "Jute", "Li
 const COMMON_SOILS = ["Alluvial Loam", "Clay Loam", "Sandy Loam", "High Barind Clay", "Silty Loam", "Peat Soil"];
 
 export default function MyFarmManager() {
-  // Global Auth Context
-  const { user, logout, loading: authLoading } = useAuth();
-
   // Farms state
   const [farms, setFarms] = useState([]);
   const [farmsLoading, setFarmsLoading] = useState(false);
@@ -69,38 +59,27 @@ export default function MyFarmManager() {
   const [farmClimate, setFarmClimate] = useState(null);
   const [loadingClimate, setLoadingClimate] = useState(false);
 
-  // Fetch list of farms for logged-in user
+  // Fetch list of saved farms
   const fetchFarms = useCallback(async () => {
-    if (!user) return;
     setFarmsLoading(true);
     setFarmError(null);
     try {
       const list = await api.getFarms();
-      setFarms(list);
+      setFarms(list || []);
       // Auto select first farm if none selected
-      if (list.length > 0 && !selectedFarm) {
+      if (list && list.length > 0 && !selectedFarm) {
         setSelectedFarm(list[0]);
       }
     } catch (err) {
-      if (err.message && (err.message.includes("401") || err.message.includes("Could not validate credentials"))) {
-        logout();
-        setFarmError("Your session has expired. Please sign in again.");
-      } else {
-        setFarmError(err.message || "Failed to load farm portfolio.");
-      }
+      setFarmError(err.message || "Failed to load farm portfolio.");
     } finally {
       setFarmsLoading(false);
     }
-  }, [user, selectedFarm, logout]);
+  }, [selectedFarm]);
 
   useEffect(() => {
-    if (user) {
-      fetchFarms();
-    } else {
-      setFarms([]);
-      setSelectedFarm(null);
-    }
-  }, [user, fetchFarms]);
+    fetchFarms();
+  }, [fetchFarms]);
 
   // Open modal for Create
   const handleOpenCreateModal = () => {
@@ -245,7 +224,7 @@ export default function MyFarmManager() {
       })
     );
 
-    const el = document.getElementById("climate-dashboard");
+    const el = document.getElementById("dashboard") || document.getElementById("climate-dashboard");
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -275,7 +254,7 @@ export default function MyFarmManager() {
       })
     );
 
-    const el = document.getElementById("crop-ranking");
+    const el = document.getElementById("crop-recommendation") || document.getElementById("crop-ranking");
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -314,28 +293,6 @@ export default function MyFarmManager() {
             </p>
           </div>
 
-          {/* User state badge / Logout */}
-          {user && (
-            <div className="flex items-center gap-3 bg-slate-900/90 border border-white/10 px-4 py-2.5 rounded-2xl backdrop-blur-md">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-300 font-bold text-xs">
-                  {user.name.charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-white leading-tight">{user.name}</div>
-                  <div className="text-[10px] text-gray-400 font-mono leading-tight">{user.email}</div>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={logout}
-                className="ml-2 p-1.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-white/5 transition"
-                title="Sign Out"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Global Alert Notices */}
@@ -353,27 +310,8 @@ export default function MyFarmManager() {
           </div>
         )}
 
-        {/* Protected Section State: Render functional LoginCard when unauthenticated */}
-        {!user && !authLoading && (
-          <div className="flex flex-col items-center justify-center py-6">
-            <div className="mb-6 text-center max-w-md">
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-3">
-                <ShieldCheck className="w-4 h-4" />
-                Protected Agronomic Dashboard
-              </div>
-              <h3 className="text-2xl font-bold text-white">Sign In to Access Your Farms</h3>
-              <p className="text-xs sm:text-sm text-gray-400 mt-2 leading-relaxed">
-                Connect your farm GPS parcels with live NASA POWER observations and multi-crop recommendation models.
-              </p>
-            </div>
-
-            <LoginCard onSuccess={fetchFarms} showDemoButton={true} className="mx-auto" />
-          </div>
-        )}
-
-        {/* If Logged In: Portfolio Dashboard */}
-        {user && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Portfolio Dashboard */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Left Column: Farm Cards & Add button (7 cols) */}
             <div className="lg:col-span-7 space-y-4">
               <div className="flex items-center justify-between">
@@ -617,7 +555,6 @@ export default function MyFarmManager() {
               )}
             </div>
           </div>
-        )}
 
         {/* Modal: Create or Edit Farm */}
         {isModalOpen && (

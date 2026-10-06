@@ -1,11 +1,24 @@
-export default function FeatureCard({ icon, title, text, onClick, actionText }) {
+export default function FeatureCard({ icon, title, text, onClick, actionText, href }) {
+  const handleClick = (e) => {
+    if (onClick) {
+      onClick(e);
+    } else if (href && href.startsWith("#")) {
+      const target = document.querySelector(href);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
+  const isInteractive = Boolean(onClick || href);
 
   return (
     <div
-      onClick={onClick}
-      role={onClick ? "button" : undefined}
-      tabIndex={onClick ? 0 : undefined}
-      onKeyDown={onClick ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } } : undefined}
+      onClick={isInteractive ? handleClick : undefined}
+      role={isInteractive ? "button" : undefined}
+      tabIndex={isInteractive ? 0 : undefined}
+      onKeyDown={isInteractive ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleClick(e); } } : undefined}
       className="
       w-full
       sm:w-[250px]

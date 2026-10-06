@@ -244,7 +244,7 @@ Secured by JWT authentication, users can manage their personal farms via `/api/f
 ## 15. Unified Production Dashboard
 
 The main dashboard (`ClimateDashboard.jsx`) coordinates the full platform features:
-1. **Top Control Bar:** Location selector (pre-configured districts + custom coordinates) and saved farm selector for logged-in users.
+1. **Top Control Bar:** Location selector (pre-configured districts + custom coordinates) and saved farm parcel selector.
 2. **NASA Climate Telemetry Summary:** 7 vital climate metrics with regional averages, extrema, and last updated indicators.
 3. **Historical Climate Trends Chart:** Visualizes 30-day temperature ranges, precipitation bars, and soil moisture trajectories.
 4. **Multi-Crop Recommendation Grid:** Interactive cards displaying ranks, suitability scores, and factor breakdowns with ML toggle.
@@ -451,7 +451,7 @@ When presenting or demonstrating AgriShift AI:
 5. **Climate Risk Intelligence:** Review the 3 risk cards (**Drought**, **Flood**, **Heat Stress**). Demonstrate what-if simulation sliders (e.g. simulate 42°C heatwave or 90 mm heavy rainfall).
 6. **Farmer Actionable Advisories:** Highlight bilingual directives in English and Bangla with actionable priorities for irrigation and heat protection.
 7. **Interactive Farm Map:** Click a point anywhere on the Bangladesh map to capture exact coordinates and retrieve localized NASA climate telemetry.
-8. **My Farm Management & Auth:** Log in or register an account. Save a farm (e.g., "Barind Maize Field"), run instant climate analysis, and edit farm details.
+8. **My Farm Management:** Save a farm parcel (e.g., "Barind Maize Field"), run instant climate analysis, and edit farm details without requiring login.
 9. **Automated Testing Validation:** Demonstrate running `npm test` and `pytest backend/tests/ -v` showing 62/62 tests passing.
 
 ---

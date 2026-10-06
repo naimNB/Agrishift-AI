@@ -11,50 +11,38 @@ import About from "./components/About";
 import Footer from "./components/Footer";
 import HeroModal from "./components/HeroModal";
 import VideoBgManager from "./components/VideoBgManager";
-import { AuthProvider } from "./context/AuthContext";
-import AuthModal from "./components/AuthModal";
 
 export default function App() {
   const [activeModal, setActiveModal] = useState(null);
   const [bgMode, setBgMode] = useState("normal"); // "normal" | "video"
 
   return (
-    <AuthProvider>
-      {/*
-       * In video mode the root div becomes transparent so the fixed
-       * VideoBgManager (z-0) shows through. All sections keep their own
-       * bg-[#060b17] so in normal mode nothing changes visually.
-       * In video mode we override section backgrounds via a CSS class on root.
-       */}
-      <div
-        className={`min-h-screen text-white selection:bg-green-400 selection:text-black ${
-          bgMode === "video" ? "video-bg-mode" : "bg-[#060b17]"
-        }`}
-      >
-        {/* Fixed video background — only active in video mode */}
-        {bgMode === "video" && <VideoBgManager />}
+    <div
+      className={`min-h-screen text-white selection:bg-green-400 selection:text-black ${
+        bgMode === "video" ? "video-bg-mode" : "bg-[#060b17]"
+      }`}
+    >
+      {/* Fixed video background — only active in video mode */}
+      {bgMode === "video" && <VideoBgManager />}
 
-        <Navbar onOpenModal={setActiveModal} bgMode={bgMode} onToggleBgMode={() => setBgMode((m) => m === "normal" ? "video" : "normal")} />
+      <Navbar onOpenModal={setActiveModal} bgMode={bgMode} onToggleBgMode={() => setBgMode((m) => m === "normal" ? "video" : "normal")} />
 
-        <main>
-          <Hero onOpenModal={setActiveModal} />
-          <Features />
-          <ClimateDashboard />
-          <MyFarmManager />
-          <NasaData onOpenModal={setActiveModal} />
-          <HowItWorks onOpenModal={setActiveModal} />
-          <Impact onOpenModal={setActiveModal} />
-          <About onOpenModal={setActiveModal} />
-        </main>
+      <main>
+        <Hero onOpenModal={setActiveModal} />
+        <Features />
+        <ClimateDashboard />
+        <MyFarmManager />
+        <NasaData onOpenModal={setActiveModal} />
+        <HowItWorks onOpenModal={setActiveModal} />
+        <Impact onOpenModal={setActiveModal} />
+        <About onOpenModal={setActiveModal} />
+      </main>
 
-        <Footer />
+      <Footer />
 
-        {activeModal && (
-          <HeroModal type={activeModal} onClose={() => setActiveModal(null)} />
-        )}
-
-        <AuthModal />
-      </div>
-    </AuthProvider>
+      {activeModal && (
+        <HeroModal type={activeModal} onClose={() => setActiveModal(null)} />
+      )}
+    </div>
   );
 }

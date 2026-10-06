@@ -3,6 +3,13 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ClimateRisk from "../components/ClimateRisk";
 import CropRecommendation from "../components/CropRecommendation";
 import ClimateDashboard from "../components/ClimateDashboard";
+import Navbar from "../components/Navbar";
+import MyFarmManager from "../components/MyFarmManager";
+import Hero from "../components/Hero";
+import Features from "../components/Features";
+import NasaData from "../components/NasaData";
+import HowItWorks from "../components/HowItWorks";
+import About from "../components/About";
 import { AuthProvider } from "../context/AuthContext";
 import { api } from "../services/api";
 
@@ -13,6 +20,7 @@ vi.mock("../services/api", () => ({
     rankCrops: vi.fn(),
     getClimateData: vi.fn(),
     getFarmerAdvisories: vi.fn(),
+    getClimateSummary: vi.fn().mockResolvedValue({ summary: {} }),
     getFarms: vi.fn(),
     getMe: vi.fn(),
     login: vi.fn(),
@@ -303,5 +311,162 @@ describe("Component Automated Tests", () => {
         ).toBeInTheDocument();
       });
     });
+
+    it("should render farm selector dropdown without sign in prompt", async () => {
+      api.getClimateData.mockResolvedValue({ summary: {}, data: [] });
+      api.getClimateRisk.mockResolvedValue({ risks: [] });
+      api.rankCrops.mockResolvedValue({ recommendations: [] });
+      api.getFarmerAdvisories.mockResolvedValue({ advisories: [] });
+      api.getFarms.mockResolvedValue([
+        { id: 1, farm_name: "Barind Maize Field", district: "rajshahi", area: 4.5, area_unit: "bigha" },
+      ]);
+
+      render(<ClimateDashboard />);
+
+      expect(screen.getByText(/Farm Parcel Selector/i)).toBeInTheDocument();
+      expect(screen.getByText(/Manage Farms/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Sign In to load your farms/i)).not.toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(screen.getByText(/Barind Maize Field/i)).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("4. Navbar Component (No Auth UI)", () => {
+    it("should render navigation links and CTA without Sign In / Register buttons", () => {
+      render(<Navbar onOpenModal={vi.fn()} bgMode="normal" onToggleBgMode={vi.fn()} />);
+
+      expect(screen.getByText(/Agri/i)).toBeInTheDocument();
+      expect(screen.getByText(/Get Started/i)).toBeInTheDocument();
+      expect(screen.queryByText(/^Sign In$/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Sign In \/ Register/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/^Register$/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Sign Out/i)).not.toBeInTheDocument();
+    });
+  });
+
+  describe("5. MyFarmManager Component (No Auth Gate)", () => {
+    it("should render farm portfolio dashboard directly without Sign In gate", async () => {
+      api.getFarms.mockResolvedValue([
+        {
+          id: 1,
+          farm_name: "Karatoya Rice Basin",
+          district: "bogura",
+          latitude: 24.8465,
+          longitude: 89.3773,
+          area: 3.0,
+          area_unit: "bigha",
+          soil_type: "Alluvial Loam",
+          current_crop: "Rice",
+        },
+      ]);
+
+      render(<MyFarmManager />);
+
+      expect(screen.getByText(/My Farm/i)).toBeInTheDocument();
+      expect(screen.getByText(/Add New Farm/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Sign In to Access Your Farms/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Protected Agronomic Dashboard/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Sign Out/i)).not.toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(screen.getAllByText(/Karatoya Rice Basin/i).length).toBeGreaterThan(0);
+      });
+    });
+  });
+
+  describe("6. Navbar Navigation Links & Anchors", () => {
+    it("should render working links to all recommended primary application sections", () => {
+      const { container } = render(
+        <Navbar onOpenModal={vi.fn()} bgMode="normal" onToggleBgMode={vi.fn()} />
+      );
+
+      const navLinks = container.querySelectorAll("a[href^='#']");
+      const hrefs = Array.from(navLinks).map((a) => a.getAttribute("href"));
+
+      expect(hrefs).toContain("#home");
+      expect(hrefs).toContain("#dashboard");
+      expect(hrefs).toContain("#nasa-data");
+      expect(hrefs).toContain("#crop-recommendation");
+      expect(hrefs).toContain("#climate-risk");
+      expect(hrefs).toContain("#farmer-advisory");
+      expect(hrefs).toContain("#farm-map");
+    });
+  });
+
+  describe("7. Hero CTAs & Quick Jump Behavior", () => {
+    it("should render primary 'Explore Demo Farm' and 'Live Map' CTAs with direct anchors", () => {
+      const { container } = render(<Hero onOpenModal={vi.fn()} />);
+
+      const exploreDemo = screen.getByText(/Explore Demo Farm/i).closest("a");
+      expect(exploreDemo).toBeInTheDocument();
+      expect(exploreDemo).toHaveAttribute("href", "#dashboard");
+
+      const liveMap = screen.getByText(/Live Map/i).closest("a");
+      expect(liveMap).toBeInTheDocument();
+      expect(liveMap).toHaveAttribute("href", "#farm-map");
+
+      // Verify quick jump pills
+      const cropAdv = screen.getByText(/Crop Advisory/i).closest("a");
+      expect(cropAdv).toHaveAttribute("href", "#crop-recommendation");
+
+      const climateRisk = screen.getByText(/Climate Risk/i).closest("a");
+      expect(climateRisk).toHaveAttribute("href", "#climate-risk");
+
+      const farmerAdv = screen.getByText(/Farmer Advisory/i).closest("a");
+      expect(farmerAdv).toHaveAttribute("href", "#farmer-advisory");
+
+      const histTrends = screen.getByText(/Historical Trends/i).closest("a");
+      expect(histTrends).toHaveAttribute("href", "#historical-trends");
+
+      const nasaData = screen.getByText(/NASA Data/i).closest("a");
+      expect(nasaData).toHaveAttribute("href", "#nasa-data");
+    });
+  });
+
+  describe("8. Section CTA Routing & Functional Action Links", () => {
+    it("should render actionable links in Features cards to corresponding tools", () => {
+      const { container } = render(<Features />);
+
+      const featureLinks = Array.from(container.querySelectorAll("a[href^='#']")).map((a) =>
+        a.getAttribute("href")
+      );
+
+      expect(featureLinks).toContain("#nasa-data");
+      expect(featureLinks).toContain("#crop-recommendation");
+      expect(featureLinks).toContain("#historical-trends");
+      expect(featureLinks).toContain("#climate-risk");
+      expect(featureLinks).toContain("#farm-map");
+      expect(featureLinks).toContain("#farmer-advisory");
+    });
+
+    it("should render working Live Telemetry link to #dashboard in NasaData", () => {
+      const mockModal = vi.fn();
+      render(<NasaData onOpenModal={mockModal} />);
+
+      const liveTelemetry = screen.getByText(/Live Telemetry/i).closest("a");
+      expect(liveTelemetry).toHaveAttribute("href", "#dashboard");
+
+      // Sensor specs button should open informational modal
+      const specsBtn = screen.getByText(/Sensor Specs/i);
+      fireEvent.click(specsBtn);
+      expect(mockModal).toHaveBeenCalledWith("specs");
+    });
+
+    it("should render working Launch Crop Intelligence link to #crop-recommendation in HowItWorks", () => {
+      render(<HowItWorks onOpenModal={vi.fn()} />);
+
+      const launchLink = screen.getByText(/Launch Crop Intelligence/i).closest("a");
+      expect(launchLink).toHaveAttribute("href", "#crop-recommendation");
+    });
+
+    it("should render working Explore Demo Farm link to #dashboard in About", () => {
+      render(<About onOpenModal={vi.fn()} />);
+
+      const demoLink = screen.getByText(/Explore Demo Farm/i).closest("a");
+      expect(demoLink).toHaveAttribute("href", "#dashboard");
+    });
   });
 });
+
