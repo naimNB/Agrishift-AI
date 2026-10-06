@@ -16,7 +16,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="AgriShift AI Backend",
-    description="NASA-powered agriculture intelligence API for North Bengal",
+    description="NASA-powered agriculture intelligence API for Bangladesh",
     version="1.0.0",
     lifespan=lifespan,
 )
@@ -50,7 +50,7 @@ def root():
     return {
         "message": "AgriShift AI Backend is running 🌾",
         "docs": "/docs",
-        "region": "North Bengal, Bangladesh",
+        "region": "Bangladesh",
     }
 
 

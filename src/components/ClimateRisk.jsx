@@ -343,7 +343,7 @@ export default function ClimateRisk({
           <div className="flex items-center gap-4 text-gray-400 text-[11px] font-mono">
             <span className="flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              Engine: <strong className="text-white">Threshold Matrix</strong> (BARC/BMD Rules)
+              Engine: <strong className="text-white">Threshold Matrix</strong> (Bangladesh-oriented agronomic prototype rules)
             </span>
             <span className="hidden sm:inline text-gray-600">|</span>
             <span className="flex items-center gap-1.5">

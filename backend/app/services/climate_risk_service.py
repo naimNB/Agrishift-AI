@@ -7,7 +7,7 @@ Evaluates agroclimatic risk hazards across three core categories:
 3. Heat Stress Risk
 
 Uses real NASA POWER agroclimatology telemetry combined with transparent,
-defensible agronomic threshold logic aligned with BARC & BMD standards.
+defensible agronomic threshold logic using Bangladesh-oriented agronomic prototype rules.
 """
 
 import math
@@ -430,7 +430,7 @@ async def assess_climate_risks_for_district(
             "days_analyzed": len(records),
         },
         "engine": "rule_based_risk_matrix",
-        "engine_name": "NASA POWER Agroclimatic Threshold Matrix (BARC/BMD Aligned)",
+        "engine_name": "NASA POWER Agroclimatic Threshold Matrix (Bangladesh-oriented agronomic prototype rules)",
         "is_ai_model": False,
         "overall_risk_level": overall_level,
         "overall_risk_score": round(max_score, 2),

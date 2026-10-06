@@ -6,8 +6,7 @@ Configurable thresholds, weights, and agronomic guidelines for evaluating:
 2. Flood / Excess Rainfall Risk
 3. Heat Stress Risk
 
-Thresholds are aligned with Bangladesh Meteorological Department (BMD),
-Bangladesh Agricultural Research Council (BARC), and DAE agro-ecological guidelines.
+Thresholds are formulated as Bangladesh-oriented agronomic prototype rules.
 """
 
 from typing import Dict, Any

@@ -12,7 +12,7 @@ Tasks:
 
 import os
 import json
-import warnings1
+import warnings
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -57,8 +57,8 @@ print(f"Artifact output directory: {OUTPUT_DIR}\n")
 
 # ── 1. Dataset Generation ──────────────────────────────────────────────────────
 # Note: In the absence of an open-access empirical multi-season field survey for
-# Bangladesh AEZ, we generate a synthetic benchmark based on published BARC/BARI
-# agronomic ranges with added Gaussian boundary noise to reflect real-world variance.
+# Bangladesh AEZ, we generate a synthetic benchmark based on Bangladesh-oriented
+# agronomic prototype rules with added Gaussian boundary noise to reflect real-world variance.
 # THIS DATASET IS SYNTHETIC AND CLEARLY FLAGGED AS SUCH.
 
 AGRONOMIC_RANGES = {
@@ -168,7 +168,7 @@ print(f"   Train samples: {len(X_train)} (80%)")
 print(f"   Test samples : {len(X_test)} (20%)")
 print("   Data leakage check: Preprocessing pipeline is fitted ONLY on X_train.\n")
 
-1
+
 # ── 5. Reproducible Sklearn Preprocessor ────────────────────────────────────────
 preprocessor = ColumnTransformer(
     transformers=[
@@ -345,11 +345,11 @@ metadata = {
         "total_samples": len(raw_df),
         "train_samples": len(X_train),
         "test_samples": len(X_test),
-        "sampling_method": "Uniform distribution with 5% Gaussian boundary noise across BARC AEZ ranges",
+        "sampling_method": "Uniform distribution with 5% Gaussian boundary noise across Bangladesh-oriented agronomic prototype rules",
         "limitations": (
             "CRITICAL ACADEMIC NOTE: This dataset was programmatically generated from agronomic physiological "
-            "rules rather than an empirical multi-year field trial. While it accurately mirrors established BARC "
-            "boundaries, real-world microclimate interactions, soil microbiomes, and pest vectors require future "
+            "rules rather than an empirical multi-year field trial. While it reflects Bangladesh-oriented "
+            "agronomic prototype rules, real-world microclimate interactions, soil microbiomes, and pest vectors require future "
             "validation with empirical farmer yield records."
         ),
     },

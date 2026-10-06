@@ -25,7 +25,7 @@ def test_root_endpoint(client: TestClient):
     assert response.status_code == 200
     data = response.json()
     assert "AgriShift AI" in data["message"]
-    assert "North Bengal" in data["region"]
+    assert "Bangladesh" in data["region"]
     assert data["docs"] == "/docs"
 
 

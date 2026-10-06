@@ -172,10 +172,10 @@ AgriShift AI queries daily agroclimatological feeds from the **NASA POWER** (Pre
 
 The multi-crop ranking engine evaluates all 6 candidate crops simultaneously:
 
-1. **Defensible AEZ Rule Baseline:** Grounded in BARC & BRRI agronomic thresholds. Evaluates non-linear suitability curves for temperature, moisture, rainfall, humidity, and solar radiation.
+1. **Defensible AEZ Rule Baseline:** Grounded in Bangladesh-oriented agronomic prototype rules. Evaluates non-linear suitability curves for temperature, moisture, rainfall, humidity, and solar radiation.
 2. **Transparent Scoring:** Each crop receives individual factor scores from 0% to 100%, enabling farmers to understand *why* a crop is recommended.
-3. **ML Classifier Support:** Provides seamless toggle to a trained Random Forest model (`use_ml=true`) with automatic fallback to the rule engine if model artifacts are unavailable.
-4. **No Fabricated Claims:** Results explicitly state whether they originate from the Agro-Ecological Zone rule engine or the machine learning classifier (`is_ai_model: false` vs `true`).
+3. **ML Classifier Support:** Provides an optional toggle to a trained Random Forest model (`use_ml=true`) with automatic fallback to the rule engine if model artifacts are unavailable.
+4. **Decoupled Architecture (Rule-Based vs. ML-Based):** Rule-based and ML-based outputs are kept strictly separate. The API explicitly flags whether recommendations originate from the deterministic Agro-Ecological Zone rule baseline (`is_ai_model: false`) or the machine learning classifier (`is_ai_model: true`), keeping rule-based and ML-based pipelines completely decoupled.
 
 ---
 
@@ -183,9 +183,11 @@ The multi-crop ranking engine evaluates all 6 candidate crops simultaneously:
 
 The ML pipeline (`ml/train_model.py`) evaluates multiple model families against agroclimate features:
 
+* **Synthetic Training Dataset:** The training dataset is purely synthetic, programmatically generated using Bangladesh-oriented agronomic prototype rules with added Gaussian boundary noise (5% std). It does not represent an empirical multi-year field survey or historical harvest records, and no empirical field validation is claimed.
+* **Rule-Based vs. ML-Based Separation:** Rule-based evaluations (deterministic physiological scoring) and ML predictions (scikit-learn classifier pipeline) are kept completely decoupled in both code and API response schemas.
 * **Models Evaluated:** Random Forest, Gradient Boosting, Logistic Regression.
-* **Validation Methodology:** Stratified train/test split (80/20) with cross-validation.
-* **Leakage Prevention:** Pipeline encapsulating `StandardScaler` and model parameters without data contamination.
+* **Validation Methodology:** Stratified train/test split (80/20) with 5-fold cross-validation.
+* **Leakage Prevention:** Pipeline encapsulating `StandardScaler`, `OneHotEncoder`, and classifier parameters fitted exclusively on training data without data contamination.
 * **Artifact Metadata:** Serialized metadata JSON (`backend/ml_models/model_metadata.json`) recording training date, feature names, confusion matrix, precision, recall, and F1 scores.
 
 ---
@@ -458,12 +460,12 @@ When presenting or demonstrating AgriShift AI:
 
 ### Current Limitations
 1. **Satellite Raster Feeds vs. Point Telemetry:** Point agroclimate observations are queried live from NASA POWER. High-resolution raster imagery overlays in modal dialogues remain prototype demonstrations.
-2. **Empirical Dataset Scarcity:** ML training was performed on agronomic growth boundaries calibrated against BARC/BRRI standards rather than multi-decade ground-truth yield records.
+2. **Synthetic Dataset & Lack of Empirical Validation:** ML training was performed on a synthetic dataset generated from Bangladesh-oriented agronomic prototype rules rather than multi-decade ground-truth yield records. The system does not claim empirical field validation.
 3. **Soil Nutrient Testing:** Soil parameters are derived from regional Agro-Ecological Zones rather than real-time NPK/pH laboratory test kits.
 
 ### Future Roadmap
 - [ ] **Direct GEE / GIBS Tile Ingestion:** Integrate Google Earth Engine for real-time 10m Sentinel-2 NDVI raster overlays.
-- [ ] **Empirical BARC Calibration:** Ingest historical multi-season Upazila harvest data for higher-order yield prediction.
+- [ ] **Empirical Field Calibration:** Ingest historical multi-season Upazila harvest data for higher-order yield prediction and empirical validation.
 - [ ] **Offline PWA & SMS Gateway:** Package the application as an offline-first Progressive Web App with cellular SMS advisory alerts for non-smartphone farmers.
 - [ ] **Localized Weather Radar:** Incorporate Bangladesh Meteorological Department (BMD) Doppler radar feeds for 6-hour convective storm warnings.
 
@@ -472,9 +474,8 @@ When presenting or demonstrating AgriShift AI:
 ## 25. Data Attribution & References
 
 * **NASA POWER Project:** Daily agroclimatology telemetry provided by the NASA Langley Research Center POWER Project funded through the NASA Earth Science Directorate Applied Science Program ([https://power.larc.nasa.gov](https://power.larc.nasa.gov)).
-* **Bangladesh Rice Research Institute (BRRI):** Agroclimatic growth threshold handbooks for Aman and Boro rice cultivars.
-* **Bangladesh Agricultural Research Institute (BARI):** Northwestern Bangladesh Rabi crop production and irrigation guidelines.
-* **Disclaimer:** *AgriShift AI is an independent software application utilizing publicly available NASA Earth observation data. This initiative is not officially endorsed by or affiliated with NASA.*
+* **Agronomic Guidelines:** Bangladesh-oriented agronomic prototype rules constructed from regional crop growth boundaries.
+* **Disclaimer:** *AgriShift AI is an independent software application utilizing publicly available NASA Earth observation data. The ML models are trained on synthetic data and do not imply empirical field validation. This initiative is not officially endorsed by or affiliated with NASA.*
 
 ---
 

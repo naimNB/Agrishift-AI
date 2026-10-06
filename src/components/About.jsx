@@ -23,7 +23,7 @@ const pillars = [
     bg: "bg-amber-500/10",
     border: "hover:border-amber-400/30",
     title: "Regional Agronomic Standards",
-    desc: "Calibrated alongside published guidelines from national agricultural research institutions (BRRI / BARI) for Bangladesh AEZs.",
+    desc: "Calibrated using Bangladesh-oriented agronomic prototype rules for regional AEZs.",
   },
   {
     icon: Users,

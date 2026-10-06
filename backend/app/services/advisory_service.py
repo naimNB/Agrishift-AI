@@ -417,7 +417,7 @@ async def generate_farmer_advisories_for_district(
         "assessment_date": str(date.today()),
         "season_context": season_context,
         "engine": "deterministic_farmer_advisory_engine",
-        "engine_name": "AgriShift Rule-Based Advisory Layer (BARC / DAE Aligned)",
+        "engine_name": "AgriShift Rule-Based Advisory Layer (Bangladesh-oriented agronomic prototype rules)",
         "is_ai_model": False,
         "advisories": all_advisories,
         "top_recommended_crop": {

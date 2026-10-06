@@ -93,8 +93,8 @@
     "total_samples": 9000,
     "train_samples": 7200,
     "test_samples": 1800,
-    "sampling_method": "Uniform distribution with 5% Gaussian boundary noise across BARC AEZ ranges",
-    "limitations": "CRITICAL ACADEMIC NOTE: This dataset was programmatically generated from agronomic physiological rules rather than an empirical multi-year field trial. While it accurately mirrors established BARC boundaries, real-world microclimate interactions, soil microbiomes, and pest vectors require future validation with empirical farmer yield records."
+    "sampling_method": "Uniform distribution with 5% Gaussian boundary noise across Bangladesh-oriented agronomic prototype rules",
+    "limitations": "CRITICAL ACADEMIC NOTE: This dataset was programmatically generated from agronomic physiological rules rather than an empirical multi-year field trial. While it reflects Bangladesh-oriented agronomic prototype rules, real-world microclimate interactions, soil microbiomes, and pest vectors require future validation with empirical farmer yield records."
   },
   "inference_schema": {
     "type": "object",

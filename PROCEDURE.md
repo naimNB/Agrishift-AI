@@ -53,7 +53,7 @@ The platform is organized into a decoupled, modern client-server topology:
 ### Phase 3: Multi-Crop Ranking & Recommendation Engine
 1. **Candidate Crop Expansion:** Supported all 6 core Bangladesh crops: Rice (ধান), Wheat (গম), Maize (ভুট্টা), Jute (পাট), Potato (আলু), and Mustard (সরিষা).
 2. **Endpoint (`POST /api/predictions/rank-crops`):** Designed an endpoint taking current climate variables and returning an ordered array of candidate crops sorted strictly by suitability score.
-3. **AEZ Rule Baseline:** Constructed a transparent agronomic scoring engine based on published BRRI/BARI physiological growth boundaries.
+3. **AEZ Rule Baseline:** Constructed a transparent agronomic scoring engine based on Bangladesh-oriented agronomic prototype rules.
 4. **Transparency Guard:** API responses explicitly return `engine: "rule_based"` or `"ml_randomforest"` with `is_ai_model: false/true` so rules are never falsely claimed to be an AI model.
 
 ### Phase 4: Machine Learning Pipeline & Explainability
