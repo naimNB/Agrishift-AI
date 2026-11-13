@@ -18,9 +18,42 @@ Public access (no API key required).
 """
 
 import httpx
+import time
 from datetime import date, timedelta
-from typing import Optional
+from typing import Optional, NamedTuple
 from app.config import settings
+
+
+# In-Memory Cache for NASA POWER Telemetry
+# Avoids redundant external HTTP calls for identical coordinate/date queries
+class _CacheEntry(NamedTuple):
+    timestamp: float
+    data: dict
+
+_NASA_CACHE: dict[str, _CacheEntry] = {}
+
+
+def get_cached_telemetry(key: str, ttl: int = 3600) -> Optional[dict]:
+    """Retrieves cached NASA telemetry if still within TTL."""
+    entry = _NASA_CACHE.get(key)
+    if entry and (time.time() - entry.timestamp) < ttl:
+        return entry.data
+    return None
+
+
+def set_cached_telemetry(key: str, data: dict) -> None:
+    """Stores telemetry in memory with timestamp, evicting oldest if capacity exceeded."""
+    if len(_NASA_CACHE) > 500:
+        # Evict oldest 100 entries to prevent memory exhaustion
+        oldest_keys = sorted(_NASA_CACHE.keys(), key=lambda k: _NASA_CACHE[k].timestamp)[:100]
+        for k in oldest_keys:
+            _NASA_CACHE.pop(k, None)
+    _NASA_CACHE[key] = _CacheEntry(timestamp=time.time(), data=data)
+
+
+def clear_nasa_cache() -> None:
+    """Clears all cached NASA telemetry entries (useful for testing or cache refresh)."""
+    _NASA_CACHE.clear()
 
 
 # Bangladesh জেলা coordinate map
@@ -102,6 +135,7 @@ async def fetch_nasa_power_data(
     lon: Optional[float] = None,
     start: Optional[date] = None,
     end:   Optional[date] = None,
+    use_cache: bool = True,
 ) -> dict:
     """
     NASA POWER API call করে daily climate data নিয়ে আসে।
@@ -141,6 +175,12 @@ async def fetch_nasa_power_data(
         nearest_dist = "bogura"
         display_name = "Bogura"
 
+    cache_key = f"{actual_lat:.4f}_{actual_lon:.4f}_{start.strftime('%Y%m%d')}_{end.strftime('%Y%m%d')}"
+    if use_cache:
+        cached = get_cached_telemetry(cache_key, ttl=getattr(settings, "NASA_CACHE_TTL_SECONDS", 3600))
+        if cached is not None:
+            return {**cached, "is_cached": True}
+
     params = {
         "parameters": NASA_PARAMETERS,
         "community":  "AG",               # Agriculture community
@@ -151,7 +191,8 @@ async def fetch_nasa_power_data(
         "format":     "JSON",
     }
 
-    async with httpx.AsyncClient(timeout=30.0) as client:
+    timeout_sec = getattr(settings, "NASA_REQUEST_TIMEOUT", 20.0)
+    async with httpx.AsyncClient(timeout=timeout_sec) as client:
         response = await client.get(settings.NASA_POWER_BASE_URL, params=params)
         response.raise_for_status()
         raw = response.json()
@@ -179,7 +220,7 @@ async def fetch_nasa_power_data(
             "soil_moisture":  clean_val(props["GWETROOT"].get(d)),
         })
 
-    return {
+    result = {
         "district":         norm_district,
         "display_name":     display_name,
         "latitude":         actual_lat,
@@ -191,7 +232,13 @@ async def fetch_nasa_power_data(
         "total_days":       len(records),
         "source":           "NASA POWER (Prediction Of Worldwide Energy Resources) Daily Agroclimatology",
         "data":             records,
+        "is_cached":        False,
     }
+
+    if use_cache:
+        set_cached_telemetry(cache_key, result)
+
+    return result
 
 
 def get_summary_stats(data: list[dict]) -> dict:

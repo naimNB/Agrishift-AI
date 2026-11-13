@@ -31,10 +31,27 @@ class Settings(BaseSettings):
 
     # NASA POWER API (public access for AG community)
     NASA_POWER_BASE_URL: str = "https://power.larc.nasa.gov/api/temporal/daily/point"
+    NASA_CACHE_TTL_SECONDS: int = 3600  # In-memory telemetry cache TTL (1 hour)
+    NASA_REQUEST_TIMEOUT: float = 20.0  # Outbound HTTP timeout in seconds
 
     # North Bengal default coordinates (Bogura agricultural center)
     NORTH_BENGAL_LAT: float = 24.8465
     NORTH_BENGAL_LON: float = 89.3773
+
+    # Cloud Networking & Server Settings
+    PORT: int = 8000
+    HOST: str = "0.0.0.0"
+    LOG_LEVEL: str = "INFO"
+
+    # CORS configuration: comma-separated list of allowed origins or "*"
+    CORS_ORIGINS: str = "*"
+
+    @property
+    def cors_origins_list(self) -> list[str]:
+        """Parses CORS_ORIGINS string into a list of cleaned origins."""
+        if not self.CORS_ORIGINS or self.CORS_ORIGINS.strip() == "*":
+            return ["*"]
+        return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
 
     model_config = SettingsConfigDict(
         env_file=(
@@ -59,6 +76,14 @@ class Settings(BaseSettings):
                 raise ValueError(
                     "CRITICAL SECURITY FAILURE: Production environment requires a strong, random "
                     "SECRET_KEY of at least 32 characters. Do not use default or placeholder keys."
+                )
+            if self.DATABASE_URL.startswith("sqlite"):
+                warnings.warn(
+                    "PRODUCTION STORAGE NOTICE: SQLite database is configured in production. "
+                    "On ephemeral container platforms (e.g. Google Cloud Run or Render free tier), "
+                    "data stored in local SQLite will reset on container restart. "
+                    "Use a managed PostgreSQL instance (e.g. Supabase, Neon, Render Postgres) for persistence.",
+                    stacklevel=2,
                 )
         elif key in INSECURE_DEFAULT_KEYS:
             warnings.warn(

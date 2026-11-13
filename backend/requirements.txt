@@ -5,6 +5,7 @@ uvicorn[standard]==0.30.6
 # ── Database ──────────────────────────────────────────────────────────────────
 sqlalchemy==2.0.36
 alembic==1.13.3           # DB migrations (পরে দরকার হবে)
+psycopg2-binary>=2.9.9    # PostgreSQL adapter for cloud databases (Supabase, Neon, Render)
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
 python-jose[cryptography]==3.3.0

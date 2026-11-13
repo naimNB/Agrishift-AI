@@ -14,6 +14,15 @@ from unittest.mock import AsyncMock, patch
 
 from app.database import Base, get_db
 from main import app
+from app.services.nasa_service import clear_nasa_cache
+
+
+@pytest.fixture(autouse=True)
+def clean_nasa_cache():
+    """Ensures in-memory NASA telemetry cache is clean before and after each test."""
+    clear_nasa_cache()
+    yield
+    clear_nasa_cache()
 
 
 @pytest.fixture(scope="session")

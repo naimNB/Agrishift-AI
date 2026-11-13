@@ -1,0 +1,60 @@
+# AgriShift AI — Docker Compose Configuration
+# ==============================================================================
+# Local multi-container development and testing configuration.
+# Run with: docker compose up --build
+# ==============================================================================
+
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: agrishift-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+      - PORT=8000
+      - HOST=0.0.0.0
+      - SECRET_KEY=agrishift-docker-compose-test-key-32chars-min
+      - DATABASE_URL=sqlite:///./agrishift.db
+      - NASA_POWER_BASE_URL=https://power.larc.nasa.gov/api/temporal/daily/point
+      - NASA_CACHE_TTL_SECONDS=3600
+      - NASA_REQUEST_TIMEOUT=20.0
+      - CORS_ORIGINS=*
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./backend:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/liveness"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # Optional PostgreSQL container for staging / PostgreSQL testing
+  # Run with: docker compose --profile with-postgres up
+  postgres:
+    image: postgres:15-alpine
+    container_name: agrishift-postgres
+    profiles: ["with-postgres"]
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=agrishift
+      - POSTGRES_PASSWORD=agrishift_secure_password
+      - POSTGRES_DB=agrishift_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agrishift -d agrishift_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:

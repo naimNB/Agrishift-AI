@@ -1,0 +1,16 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.git
+.gitignore
+.env
+agrishift.db
+*.db-journal
+tests
+.coverage
+htmlcov
+.DS_Store
+venv
+.venv
