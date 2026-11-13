@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-from app.routers import nasa, auth, predictions, risk, advisory, farms
+from app.routers import nasa, auth, predictions, risk, advisory, farms, rotation
 from app.database import create_tables
 
 
@@ -43,6 +43,8 @@ app.include_router(predictions.router, prefix="/api/predictions", tags=["Predict
 app.include_router(risk.router,        prefix="/api/risk",        tags=["Climate Risk"])
 app.include_router(advisory.router,    prefix="/api/advisory",    tags=["Farmer Advisory"])
 app.include_router(farms.router,       prefix="/api/farms",       tags=["Farms"])
+app.include_router(rotation.router,    prefix="/api/rotations",   tags=["Crop Rotations"])
+app.include_router(rotation.router,    prefix="/api/predictions/rotations", tags=["Crop Rotations"])
 
 
 @app.get("/")
