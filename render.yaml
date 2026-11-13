@@ -31,7 +31,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: DATABASE_URL
-        value: sqlite:///:memory:
+        value: "sqlite:///:memory:"
       - key: CORS_ORIGINS
         value: "*"
       - key: LOG_LEVEL
