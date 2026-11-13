@@ -145,3 +145,58 @@ async def test_nasa_telemetry_in_memory_caching(mock_nasa_raw_json):
         assert res2["total_days"] == res1["total_days"]
 
     clear_nasa_cache()
+
+
+def test_stateless_mode_blocks_auth_and_farms(client: TestClient):
+    """
+    Verifies that when STATELESS_MODE is active (e.g. Render Free public prototype),
+    server-side user registration, login, and farm storage are blocked with HTTP 403,
+    while stateless rotation recommendations and climate endpoints remain fully functional.
+    """
+    from app.config import settings
+
+    orig_mode = settings.STATELESS_MODE
+    try:
+        settings.STATELESS_MODE = True
+
+        # Auth endpoints must return 403 Forbidden with explanatory detail
+        resp_reg = client.post("/api/auth/register", json={"email": "farmer@example.com", "password": "pass"})
+        assert resp_reg.status_code == 403
+        assert "Stateless Prototype Mode" in resp_reg.json()["detail"]
+
+        resp_login = client.post("/api/auth/login", json={"email": "farmer@example.com", "password": "pass"})
+        assert resp_login.status_code == 403
+        assert "Stateless Prototype Mode" in resp_login.json()["detail"]
+
+        # Farms personal records must return 403 Forbidden
+        resp_farms = client.get("/api/farms")
+        assert resp_farms.status_code == 403
+        assert "Stateless Prototype Mode" in resp_farms.json()["detail"]
+
+        # Root and Health endpoints must report stateless_mode = True
+        resp_root = client.get("/")
+        assert resp_root.status_code == 200
+        assert resp_root.json()["stateless_mode"] is True
+
+        resp_health = client.get("/health?details=true")
+        assert resp_health.status_code == 200
+        assert resp_health.json()["stateless_mode"] is True
+
+        # Stateless agricultural decision engine endpoints MUST remain accessible
+        resp_rot = client.get("/api/rotations/patterns")
+        assert resp_rot.status_code == 200
+
+    finally:
+        settings.STATELESS_MODE = orig_mode
+
+
+def test_render_memory_profile_safe_under_512mb():
+    """
+    Verifies that the resident process memory stays comfortably below
+    the Render Free 512 MB memory threshold to prevent OOM kills.
+    """
+    import resource
+    max_rss_kb = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    max_rss_mb = max_rss_kb / 1024.0
+    # Process memory must remain well under Render's 512 MB boundary
+    assert max_rss_mb < 450.0, f"Max RSS {max_rss_mb:.1f} MB exceeds safe Render Free limit"

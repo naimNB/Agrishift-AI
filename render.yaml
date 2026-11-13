@@ -1,0 +1,44 @@
+# AgriShift AI — Render Blueprint Configuration
+# ==============================================================================
+# Defines the public HTTPS FastAPI backend on Render's Free tier.
+# Region: Singapore (closest low-latency datacenter to Bangladesh).
+# Instance: 512 MB RAM (configured for single-worker execution).
+# Stateless: In-memory SQLite with STATELESS_MODE enabled to protect farmer data.
+# ==============================================================================
+
+services:
+  - type: web
+    name: agrishift-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    region: singapore
+    branch: feat/native-android-farmer-app
+    healthCheckPath: /health/liveness
+    autoDeploy: false
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: PORT
+        value: "10000"
+      - key: HOST
+        value: "0.0.0.0"
+      - key: WEB_CONCURRENCY
+        value: "1"
+      - key: STATELESS_MODE
+        value: "true"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        value: sqlite:///:memory:
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: LOG_LEVEL
+        value: INFO
+      - key: NASA_POWER_BASE_URL
+        value: https://power.larc.nasa.gov/api/temporal/daily/point
+      - key: NASA_CACHE_TTL_SECONDS
+        value: "3600"
+      - key: NASA_REQUEST_TIMEOUT
+        value: "20.0"

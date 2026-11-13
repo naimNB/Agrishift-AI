@@ -10,6 +10,7 @@ FROM python:3.11-slim-bookworm
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PORT=8000 \
+    WEB_CONCURRENCY=1 \
     ENVIRONMENT=production
 
 # Install curl for container health checks
@@ -45,5 +46,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:${PORT:-8000}/health/liveness || exit 1
 
-# Launch uvicorn via exec to ensure proper OS signal forwarding (SIGTERM/SIGINT)
-CMD ["sh", "-c", "exec uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 2 --proxy-headers"]
+# Launch uvicorn with 1 worker to ensure memory stays safely within Render Free 512 MB limit
+CMD ["sh", "-c", "exec uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers ${WEB_CONCURRENCY:-1} --proxy-headers"]

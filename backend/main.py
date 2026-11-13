@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, Response
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -46,12 +47,34 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             raise
 
 
+class StatelessPrototypeGuardMiddleware(BaseHTTPMiddleware):
+    """
+    Enforces stateless prototype mode on public cloud deployments (e.g. Render Free).
+    Blocks server-side user registration, login, and personal farm storage to
+    protect farmer privacy and prevent data loss on ephemeral container filesystems.
+    Farmer profiles and crop plans are preserved safely on client Android devices.
+    """
+    async def dispatch(self, request: Request, call_next):
+        if getattr(settings, "STATELESS_MODE", False):
+            path = request.url.path
+            if path.startswith("/api/auth") or path.startswith("/api/farms"):
+                return JSONResponse(
+                    status_code=403,
+                    content={
+                        "detail": "Stateless Prototype Mode: Server-side authentication and personal farm records "
+                                  "are disabled on this public prototype. AgriShift AI operates in stateless mode; "
+                                  "all farm profiles and crop plans are stored locally on the farmer's Android device."
+                    }
+                )
+        return await call_next(request)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: Validate security and create DB tables
     settings.validate_security()
     create_tables()
-    logger.info(f"AgriShift AI Backend initialized (Environment: {settings.ENVIRONMENT})")
+    logger.info(f"AgriShift AI Backend initialized (Environment: {settings.ENVIRONMENT}, Stateless: {settings.STATELESS_MODE})")
     yield
     # Shutdown: cleanup
     logger.info("AgriShift AI Backend shutting down")
@@ -65,6 +88,7 @@ app = FastAPI(
 )
 
 # ── Middleware ───────────────────────────────────────────────────────────────
+app.add_middleware(StatelessPrototypeGuardMiddleware)
 app.add_middleware(RequestLoggingMiddleware)
 
 # CORS: supports local web dashboards, Android clients, and configurable production domains
@@ -106,6 +130,7 @@ def root():
         "region": "Bangladesh",
         "version": "1.0.0",
         "environment": settings.ENVIRONMENT,
+        "stateless_mode": settings.STATELESS_MODE,
     }
 
 
@@ -128,6 +153,7 @@ def health_check(response: Response, details: bool = False):
             "status": status_str,
             "environment": settings.ENVIRONMENT,
             "version": "1.0.0",
+            "stateless_mode": settings.STATELESS_MODE,
             "database": "connected" if db_ok else "unreachable",
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }

@@ -43,6 +43,11 @@ class Settings(BaseSettings):
     HOST: str = "0.0.0.0"
     LOG_LEVEL: str = "INFO"
 
+    # Stateless Public Prototype Mode
+    # When enabled, disables server-side user accounts and personal farm storage
+    # to protect farmer privacy and prevent data loss on ephemeral containers.
+    STATELESS_MODE: bool = False
+
     # CORS configuration: comma-separated list of allowed origins or "*"
     CORS_ORIGINS: str = "*"
 
@@ -77,12 +82,12 @@ class Settings(BaseSettings):
                     "CRITICAL SECURITY FAILURE: Production environment requires a strong, random "
                     "SECRET_KEY of at least 32 characters. Do not use default or placeholder keys."
                 )
-            if self.DATABASE_URL.startswith("sqlite"):
+            if self.DATABASE_URL.startswith("sqlite") and not self.STATELESS_MODE:
                 warnings.warn(
-                    "PRODUCTION STORAGE NOTICE: SQLite database is configured in production. "
-                    "On ephemeral container platforms (e.g. Google Cloud Run or Render free tier), "
+                    "PRODUCTION STORAGE NOTICE: SQLite database is configured in production without STATELESS_MODE. "
+                    "On ephemeral container platforms (e.g. Render or Google Cloud Run), "
                     "data stored in local SQLite will reset on container restart. "
-                    "Use a managed PostgreSQL instance (e.g. Supabase, Neon, Render Postgres) for persistence.",
+                    "Enable STATELESS_MODE=True for stateless prototypes or use a managed PostgreSQL instance.",
                     stacklevel=2,
                 )
         elif key in INSECURE_DEFAULT_KEYS:

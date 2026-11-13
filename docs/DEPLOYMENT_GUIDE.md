@@ -109,26 +109,49 @@ curl "https://agrishift-backend-xxxxxx-as.a.run.app/health?details=true"
 
 ---
 
-### Option B: Render.com (Zero Credit Card Setup)
+### Option B: Render.com (Recommended Free Deployment — Blueprint Workflow)
 
-1. Push your branch to GitHub (after user approval).
-2. Go to [dashboard.render.com](https://dashboard.render.com) and click **New + > Web Service**.
-3. Connect your GitHub repository `Agrishift-AI`.
-4. Configure service settings:
+Render Blueprints allow zero-configuration deployment directly from the [`render.yaml`](../render.yaml) file:
+
+#### Method 1: 1-Click Render Blueprint (Recommended)
+1. Ensure your branch `feat/native-android-farmer-app` is pushed to your GitHub repository (upon your approval).
+2. Go to [dashboard.render.com/blueprints](https://dashboard.render.com/blueprints) and click **New Blueprint Instance**.
+3. Connect your `Agrishift-AI` repository and select branch `feat/native-android-farmer-app`.
+4. Render will automatically detect [`render.yaml`](../render.yaml) and configure:
+   - **Service Name:** `agrishift-backend`
+   - **Runtime:** `Docker` (builds `backend/Dockerfile`)
+   - **Region:** `Singapore` (low-latency region for Bangladesh)
+   - **Plan:** `Free` (0.1 CPU, 512 MB RAM)
+   - **Memory Constraint:** `WEB_CONCURRENCY=1` to guarantee resident memory stays within 512 MB.
+   - **Security:** `SECRET_KEY` is **automatically generated** as a 256-bit cryptographically secure string by Render.
+   - **Stateless Mode:** `STATELESS_MODE=true` disables server-side auth/farm records; farmer profiles are kept safely on Android devices.
+   - **Health Check:** `/health/liveness`
+5. Click **Apply**.
+6. Render builds the Docker image and deploys to an HTTPS URL (e.g. `https://agrishift-backend-xxxx.onrender.com`).
+
+#### Method 2: Manual Dashboard Creation
+If creating manually without Blueprints:
+1. Go to [dashboard.render.com](https://dashboard.render.com) and click **New + > Web Service**.
+2. Connect your GitHub repository `Agrishift-AI`.
+3. Configure service settings:
    - **Name:** `agrishift-backend`
    - **Root Directory:** `backend`
    - **Environment:** `Docker`
-   - **Region:** `Singapore` (closest to Bangladesh)
+   - **Region:** `Singapore`
    - **Instance Type:** `Free`
-5. Under **Environment Variables**, add:
+   - **Health Check Path:** `/health/liveness`
+   - **Auto-Deploy:** `No` (recommended to avoid unapproved builds)
+4. Under **Environment Variables**, add:
    - `ENVIRONMENT` = `production`
+   - `PORT` = `10000`
+   - `WEB_CONCURRENCY` = `1`
+   - `STATELESS_MODE` = `true`
    - `SECRET_KEY` = *(paste output of `openssl rand -hex 32`)*
-   - `DATABASE_URL` = `sqlite:///./agrishift.db` (or external Neon Postgres URL)
+   - `DATABASE_URL` = `sqlite:///:memory:`
    - `CORS_ORIGINS` = `*`
    - `NASA_CACHE_TTL_SECONDS` = `3600`
    - `NASA_REQUEST_TIMEOUT` = `20.0`
-6. Click **Create Web Service**.
-7. Render will build the Dockerfile and deploy to `https://agrishift-backend.onrender.com`.
+5. Click **Create Web Service**.
 
 ---
 
